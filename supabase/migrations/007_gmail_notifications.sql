@@ -12,6 +12,10 @@
 insert into public.app_settings (key, value) values ('email_provider', 'gmail')
 on conflict (key) do update set value = excluded.value;
 
+-- כתובת האתר החי (לקישורים במייל, ו-Supabase שולח אליה את הבקשה)
+insert into public.app_settings (key, value) values ('site_url', 'https://private-tutor-delta.vercel.app')
+on conflict (key) do update set value = excluded.value;
+
 create or replace function public.send_unread_email_notifications()
 returns integer
 language plpgsql
