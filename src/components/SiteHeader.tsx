@@ -14,9 +14,6 @@ export function SiteHeader() {
           Tutor<span className="text-indigo-600">IL</span>
         </Link>
         <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
-          <Link href="/" className="text-gray-700 hover:text-indigo-700">
-            דף הבית
-          </Link>
           <Link href="/search" className="text-gray-700 hover:text-indigo-700">
             חיפוש מורים
           </Link>
