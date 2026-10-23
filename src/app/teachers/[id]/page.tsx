@@ -155,6 +155,11 @@ async function TeacherProfile({ params }: Props) {
                   </button>
                 </form>
               )}
+              {user.role === 'teacher' && (
+                <p className="w-full text-sm text-gray-500">
+                  שליחת הודעות בצ&apos;אט זמינה לתלמידים. אתה/את מחובר/ת עם חשבון מורה.
+                </p>
+              )}
               {phone ? (
                 <>
                   <a
