@@ -69,7 +69,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { id } = await params
   if (!/^[0-9a-f-]{36}$/i.test(id)) return {}
   const t = await getTeacherSeo(id)
-  if (!t) return { title: 'המורה לא נמצא/ה' }
+  // אין נתונים (או שגיאה זמנית) — כותרת כללית, כדי שלא תישמר במטמון כותרת שגויה
+  if (!t) return {}
 
   const name = t.profiles.full_name
   const subjects = t.teacher_subjects.map((ts) => ts.subjects.name).slice(0, 3)
