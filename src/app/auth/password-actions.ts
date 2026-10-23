@@ -6,7 +6,7 @@ import { translateAuthError } from '@/lib/errors'
 import type { FormState } from '@/types/db'
 
 // שליחת מייל לאיפוס סיסמה.
-// תמיד מחזירים אותה הודעה — כדי שאי אפשר יהיה לבדוק אילו כתובות רשומות באתר.
+// הודעת ההצלחה זהה לכל כתובת — כדי שאי אפשר יהיה לבדוק אילו כתובות רשומות באתר.
 export async function requestPasswordReset(_prev: FormState, formData: FormData): Promise<FormState> {
   const email = String(formData.get('email') ?? '').trim().toLowerCase()
   if (!email.includes('@')) return { error: 'כתובת המייל לא תקינה' }
@@ -17,8 +17,13 @@ export async function requestPasswordReset(_prev: FormState, formData: FormData)
     redirectTo: `${origin}/auth/callback?next=/reset-password`,
   })
 
-  if (error && /rate limit|too many/i.test(error.message)) {
-    return { error: translateAuthError(error.message) }
+  // Supabase לא מחזיר שגיאה על כתובת שלא רשומה, אז הצגת שגיאה לא חושפת אילו כתובות קיימות.
+  // שגיאה כאן היא תקלה אמיתית (למשל בשליחת המייל) — מציגים אותה במקום הודעת הצלחה שקרית.
+  if (error) {
+    console.error('resetPasswordForEmail failed:', error.message)
+    return { error: /rate limit|too many/i.test(error.message)
+      ? translateAuthError(error.message)
+      : `שליחת המייל נכשלה (${error.message}). נסו שוב בעוד כמה דקות.` }
   }
 
   return {
