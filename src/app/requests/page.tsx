@@ -108,7 +108,7 @@ async function Board({ searchParams }: Props) {
         </div>
       ) : (
         <>
-          <p className="mb-3 text-gray-600">{total} בקשות פתוחות</p>
+          <p className="mb-3 text-gray-600">{total === 1 ? 'בקשה פתוחה אחת' : `${total} בקשות פתוחות`}</p>
           <ul className="space-y-4">
             {requests.map((r) => {
               const modes = [r.in_person_ok && `פרונטלי ב${r.city}`, r.online_ok && 'אונליין'].filter(Boolean).join(' או ')

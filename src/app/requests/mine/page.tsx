@@ -3,7 +3,7 @@ import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
-import { daysAgo } from '@/lib/dates'
+import { daysAgo, offersLabel } from '@/lib/dates'
 import { MAX_OFFERS_PER_REQUEST, REQUEST_DAYS_OPEN } from '@/types/requests'
 import { closeRequest } from '../actions'
 
@@ -98,7 +98,7 @@ async function List({ searchParams }: Props) {
                   <span className="text-sm text-gray-700">
                     {r.offers_count > 0 ? (
                       <Link href="/messages" className="font-medium text-indigo-700 hover:underline">
-                        {r.offers_count} הצעות · לקריאה בהודעות
+                        {offersLabel(r.offers_count)} · לקריאה בהודעות
                       </Link>
                     ) : (
                       'עדיין אין הצעות'

@@ -5,3 +5,8 @@ export function daysAgo(iso: string, now: Date): string {
   if (days === 1) return 'אתמול'
   return `לפני ${days} ימים`
 }
+
+// "הצעה אחת", "3 הצעות"
+export function offersLabel(n: number): string {
+  return n === 1 ? 'הצעה אחת' : `${n} הצעות`
+}
