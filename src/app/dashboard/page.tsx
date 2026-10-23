@@ -4,10 +4,10 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import { getLocalities, getSubjects } from '@/lib/data'
-import type { SubscriptionTier } from '@/types/db'
 import { AvatarUploader } from './AvatarUploader'
 import { ProfileForm, type ProfileValues } from './ProfileForm'
 import { AccountForm } from './AccountForm'
+import { SubscriptionCard } from './SubscriptionCard'
 
 export default function DashboardPage() {
   return (
@@ -19,8 +19,6 @@ export default function DashboardPage() {
   )
 }
 
-const TIER_NAMES: Record<SubscriptionTier, string> = { free: 'חינמי', pro: 'Pro', premium: 'פרימיום' }
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
 
 async function Dashboard() {
   const user = await getCurrentUser()
@@ -67,7 +65,7 @@ async function Dashboard() {
     supabase.from('teacher_subjects').select('subject_id, levels').eq('teacher_id', user.id),
     supabase
       .from('subscriptions')
-      .select('tier, status, current_period_end')
+      .select('tier, status, current_period_end, cancel_at_period_end')
       .eq('teacher_id', user.id)
       .order('current_period_end', { ascending: false }),
     supabase
@@ -82,7 +80,10 @@ async function Dashboard() {
   const activeSub = (subs ?? []).find(
     (s) => ['active', 'trialing'].includes(s.status) && new Date(s.current_period_end) > now
   )
-  const tier: SubscriptionTier = activeSub?.tier ?? 'free'
+  const premium =
+    activeSub?.tier === 'premium'
+      ? { periodEnd: activeSub.current_period_end as string, cancelAtPeriodEnd: !!activeSub.cancel_at_period_end }
+      : null
 
   const values: ProfileValues = {
     fullName: user.fullName,
@@ -128,21 +129,10 @@ async function Dashboard() {
           <AvatarUploader userId={user.id} name={user.fullName} url={user.avatarUrl} />
         </section>
 
-        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100 sm:w-72">
-          <h2 className="mb-2 text-lg font-bold">המנוי שלי</h2>
-          <p className="text-2xl font-bold text-indigo-700">{TIER_NAMES[tier]}</p>
-          {activeSub ? (
-            <p className="mt-1 text-sm text-gray-600">בתוקף עד {dateFmt.format(new Date(activeSub.current_period_end))}</p>
-          ) : (
-            <p className="mt-1 text-sm text-gray-600">מנוי פרימיום יקפיץ את הפרופיל לראש תוצאות החיפוש.</p>
-          )}
-          <button disabled className="mt-4 w-full cursor-not-allowed rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-500">
-            שדרוג מנוי (בקרוב)
-          </button>
-          <p className="mt-3 text-sm text-gray-600">
-            ★ {Number(teacher?.rating_avg ?? 0).toFixed(1)} · {teacher?.reviews_count ?? 0} ביקורות
-          </p>
-        </section>
+        <SubscriptionCard
+          premium={premium}
+          rating={{ avg: Number(teacher?.rating_avg ?? 0), count: teacher?.reviews_count ?? 0 }}
+        />
       </div>
 
       <ProfileForm subjects={subjects} localities={localities} values={values} />
