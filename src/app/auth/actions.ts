@@ -52,6 +52,13 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
 
   if (error) return { error: translateAuthError(error.message) }
 
+  // כתובת שכבר רשומה: Supabase מחזיר "הצלחה" בלי לשלוח מייל (משתמש בלי identities)
+  if (data.user && (data.user.identities?.length ?? 0) === 0) {
+    return {
+      error: 'כבר קיים חשבון עם כתובת המייל הזו. אפשר להתחבר, או לאפס סיסמה דרך "שכחתי סיסמה" בדף ההתחברות.',
+    }
+  }
+
   // אם אימות מייל מופעל ב-Supabase — אין session עדיין
   if (!data.session) {
     return {
