@@ -21,5 +21,9 @@ export async function GET(request: NextRequest) {
     if (!error) return NextResponse.redirect(`${origin}${next}`)
   }
 
+  // קישור לאיפוס סיסמה שנכשל (פג תוקף / נפתח בדפדפן אחר) — מבקשים קישור חדש
+  if (next.startsWith('/reset-password')) {
+    return NextResponse.redirect(`${origin}/forgot-password?error=link`)
+  }
   return NextResponse.redirect(`${origin}/login?error=confirm`)
 }
