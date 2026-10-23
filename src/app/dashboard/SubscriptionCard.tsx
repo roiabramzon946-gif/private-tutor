@@ -11,7 +11,7 @@ type Props = {
   rating: { avg: number; count: number }
 }
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'long', year: 'numeric' })
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', day: 'numeric', month: 'long', year: 'numeric' })
 
 export function SubscriptionCard({ premium, rating }: Props) {
   const [pending, startTransition] = useTransition()

@@ -12,8 +12,8 @@ type Props = {
   initialMessages: ChatMessage[]
 }
 
-const timeFmt = new Intl.DateTimeFormat('he-IL', { hour: '2-digit', minute: '2-digit' })
-const dayFmt = new Intl.DateTimeFormat('he-IL', { weekday: 'long', day: 'numeric', month: 'long' })
+const timeFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' })
+const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', weekday: 'long', day: 'numeric', month: 'long' })
 
 export function ChatThread({ conversationId, userId, otherName, initialMessages }: Props) {
   const supabase = useMemo(() => createClient(), [])

@@ -100,7 +100,7 @@ export default function TeacherPage({ params }: Props) {
   )
 }
 
-const dateFmt = new Intl.DateTimeFormat('he-IL', { month: 'long', year: 'numeric' })
+const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', month: 'long', year: 'numeric' })
 
 async function TeacherProfile({ params }: Props) {
   const { id } = await params

@@ -20,12 +20,14 @@ export default function MessagesPage() {
   )
 }
 
-const timeFmt = new Intl.DateTimeFormat('he-IL', { hour: '2-digit', minute: '2-digit' })
-const dayFmt = new Intl.DateTimeFormat('he-IL', { day: 'numeric', month: 'short' })
+const timeFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', hour: '2-digit', minute: '2-digit' })
+const dayFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', day: 'numeric', month: 'short' })
+const dayKey = new Intl.DateTimeFormat('en-CA', { timeZone: 'Asia/Jerusalem' })
 
 function formatWhen(iso: string, now: Date) {
   const d = new Date(iso)
-  return d.toDateString() === now.toDateString() ? timeFmt.format(d) : dayFmt.format(d)
+  // משווים לפי התאריך בשעון ישראל (השרת עצמו רץ ב-UTC)
+  return dayKey.format(d) === dayKey.format(now) ? timeFmt.format(d) : dayFmt.format(d)
 }
 
 async function ConversationList() {
