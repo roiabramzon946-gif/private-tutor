@@ -1,7 +1,6 @@
 import Link from 'next/link'
 import type { TeacherSearchResult } from '@/types/search'
 import { Avatar } from './Avatar'
-import { TierBadge } from './TierBadge'
 
 export function TeacherCard({ t }: { t: TeacherSearchResult }) {
   const modes = [t.teaches_in_person && 'פרונטלי', t.teaches_online && 'אונליין']
@@ -11,18 +10,16 @@ export function TeacherCard({ t }: { t: TeacherSearchResult }) {
   return (
     <Link
       href={`/teachers/${t.teacher_id}`}
-      className={`block rounded-2xl bg-white p-5 shadow-sm ring-1 transition hover:shadow-md ${
-        t.tier === 'premium' ? 'ring-amber-200' : 'ring-gray-100 hover:ring-indigo-200'
+      className={`block rounded-2xl p-5 shadow-sm ring-1 transition hover:shadow-md ${
+        // פרימיום: הדגשה בצבע (בלי תגית)
+        t.tier === 'premium' ? 'bg-amber-50 ring-2 ring-amber-300' : 'bg-white ring-gray-100 hover:ring-indigo-200'
       }`}
     >
       <div className="flex gap-4">
         <Avatar url={t.avatar_url} name={t.full_name} size={64} />
 
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
-            <h2 className="text-lg font-semibold">{t.full_name}</h2>
-            <TierBadge tier={t.tier} />
-          </div>
+          <h2 className="text-lg font-semibold">{t.full_name}</h2>
           <p className="mt-0.5 text-sm text-gray-600">
             {[t.city, modes].filter(Boolean).join(' · ')}
           </p>

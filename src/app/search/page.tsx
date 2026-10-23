@@ -119,6 +119,9 @@ async function SearchContent({ searchParams }: Props) {
             {q.city && <> ב{q.city}</>}
             {!q.city && q.region && <> באזור {q.region}</>}
             {(q.city || q.region) && q.online && <> (כולל אונליין)</>}
+            {teachers.some((t) => t.tier === 'premium') && (
+              <span className="mt-1 block text-xs text-gray-500">מורים עם מנוי פרימיום מוצגים ראשונים ובהדגשה.</span>
+            )}
           </>
         )}
       </div>

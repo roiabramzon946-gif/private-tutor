@@ -8,7 +8,6 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import { Avatar } from '@/components/Avatar'
 import { Rating, Stars } from '@/components/Rating'
-import { TierBadge } from '@/components/TierBadge'
 import type { SubscriptionTier } from '@/types/db'
 import { ReviewForm } from './ReviewForm'
 import { reviewBlockedMessage } from '@/lib/reviews'
@@ -172,7 +171,6 @@ async function TeacherProfile({ params }: Props) {
           <div className="flex-1">
             <div className="flex flex-wrap items-center gap-2">
               <h1 className="text-3xl font-bold">{name}</h1>
-              <TierBadge tier={teacher.subscription_tier} />
             </div>
             <p className="mt-1 text-gray-600">
               {[teacher.city, teacher.region].filter(Boolean).join(', ')}
