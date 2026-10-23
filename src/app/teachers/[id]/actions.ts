@@ -4,6 +4,7 @@ import { revalidatePath } from 'next/cache'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import type { FormState } from '@/types/db'
+import { reviewBlockedMessage } from '@/lib/reviews'
 
 export async function submitReview(_prev: FormState, formData: FormData): Promise<FormState> {
   const user = await getCurrentUser()
@@ -25,6 +26,11 @@ export async function submitReview(_prev: FormState, formData: FormData): Promis
     .eq('teacher_id', teacherId)
     .eq('student_id', user.id)
     .maybeSingle()
+
+  if (!existing) {
+    const { data: reason } = await supabase.rpc('review_eligibility', { p_teacher: teacherId })
+    if (reason) return { error: reviewBlockedMessage(reason as string) }
+  }
 
   const { error } = existing
     ? await supabase

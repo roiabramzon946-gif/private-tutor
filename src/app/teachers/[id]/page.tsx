@@ -8,6 +8,7 @@ import { Rating, Stars } from '@/components/Rating'
 import { TierBadge } from '@/components/TierBadge'
 import type { SubscriptionTier } from '@/types/db'
 import { ReviewForm } from './ReviewForm'
+import { reviewBlockedMessage } from '@/lib/reviews'
 import { startConversation } from '@/app/messages/actions'
 import { formatPhone, whatsappUrl } from '@/lib/phone'
 
@@ -85,6 +86,13 @@ async function TeacherProfile({ params }: Props) {
 
   const reviews = (reviewsData ?? []) as unknown as ReviewRow[]
   const myReview = user ? reviews.find((r) => r.student_id === user.id) ?? null : null
+
+  // תלמיד בלי ביקורת קיימת: בודקים אם מותר לו לכתוב (הגנה מפני ביקורות פיקטיביות)
+  let reviewBlocked: string | null = null
+  if (user?.role === 'student' && !myReview) {
+    const { data: reason } = await supabase.rpc('review_eligibility', { p_teacher: teacher.id })
+    reviewBlocked = (reason as string | null) ?? null
+  }
   const name = teacher.profiles.full_name
   const isOwner = user?.id === teacher.id
 
@@ -228,6 +236,8 @@ async function TeacherProfile({ params }: Props) {
                 התחברו כדי לכתוב ביקורת
               </Link>
             </p>
+          ) : user.role === 'student' && reviewBlocked ? (
+            <p className="text-sm text-gray-600">{reviewBlockedMessage(reviewBlocked)}</p>
           ) : user.role === 'student' ? (
             <>
               <h3 className="mb-2 font-semibold">{myReview ? 'הביקורת שלך' : 'כתבו ביקורת'}</h3>
