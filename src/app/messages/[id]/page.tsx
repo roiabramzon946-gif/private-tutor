@@ -35,10 +35,9 @@ async function Conversation({ params }: Props) {
   if (!conversation) notFound()
 
   const otherId = conversation.student_id === user.id ? conversation.teacher_id : conversation.student_id
-  const otherIsTeacher = otherId === conversation.teacher_id
 
   const [{ data: other }, { data: rows }] = await Promise.all([
-    supabase.from('profiles').select('full_name, avatar_url').eq('id', otherId).single(),
+    supabase.from('profiles').select('full_name, avatar_url, role').eq('id', otherId).single(),
     supabase
       .from('messages')
       .select('id, sender_id, body, created_at, read_at')
@@ -49,6 +48,7 @@ async function Conversation({ params }: Props) {
 
   const messages = ((rows ?? []) as ChatMessage[]).reverse()
   const otherName = other?.full_name ?? ''
+  const otherIsTeacher = other?.role === 'teacher'
 
   return (
     <div className="space-y-4">

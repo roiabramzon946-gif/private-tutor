@@ -61,6 +61,21 @@ export default function Home() {
         </Suspense>
       </section>
 
+      <section className="mx-auto max-w-5xl px-4 pb-6">
+        <div className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-white p-6 ring-1 ring-gray-100 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="text-xl font-bold">לא מצאתם מורה מתאים?</h2>
+            <p className="mt-1 text-gray-600">פרסמו בקשת לימוד, ומורים שמלמדים את המקצוע יפנו אליכם בצ&apos;אט.</p>
+          </div>
+          <Link
+            href="/requests/new"
+            className="rounded-lg bg-indigo-600 px-5 py-2.5 font-semibold text-white hover:bg-indigo-700"
+          >
+            פרסום בקשה
+          </Link>
+        </div>
+      </section>
+
       <section className="mx-auto max-w-5xl px-4 pb-14">
         <div className="flex flex-col items-start justify-between gap-4 rounded-2xl bg-indigo-700 p-8 text-white sm:flex-row sm:items-center">
           <div>

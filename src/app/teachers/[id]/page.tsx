@@ -147,19 +147,12 @@ async function TeacherProfile({ params }: Props) {
             </p>
           ) : (
             <div className="flex flex-wrap items-center gap-3">
-              {user.role === 'student' && (
-                <form action={startConversation}>
-                  <input type="hidden" name="teacher_id" value={teacher.id} />
-                  <button className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-700">
-                    שליחת הודעה באתר
-                  </button>
-                </form>
-              )}
-              {user.role === 'teacher' && (
-                <p className="w-full text-sm text-gray-500">
-                  שליחת הודעות בצ&apos;אט זמינה לתלמידים. אתה/את מחובר/ת עם חשבון מורה.
-                </p>
-              )}
+              <form action={startConversation}>
+                <input type="hidden" name="teacher_id" value={teacher.id} />
+                <button className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-700">
+                  {user.role === 'teacher' ? 'שליחת הודעה למורה' : 'שליחת הודעה באתר'}
+                </button>
+              </form>
               {phone ? (
                 <>
                   <a

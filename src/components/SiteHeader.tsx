@@ -51,6 +51,12 @@ async function UserMenu() {
 
   return (
     <div className="flex items-center gap-3">
+      <Link
+        href={user.role === 'teacher' ? '/requests' : '/requests/mine'}
+        className="text-gray-700 hover:text-indigo-700"
+      >
+        {user.role === 'teacher' ? 'בקשות לימוד' : 'הבקשות שלי'}
+      </Link>
       <UnreadBadge initial={unreadCount} />
       <Link href="/dashboard" className="text-gray-700 hover:text-indigo-700">
         האזור שלי

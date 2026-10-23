@@ -108,7 +108,11 @@ async function SearchContent({ searchParams }: Props) {
 
       {teachers.length === 0 && !error ? (
         <div className="rounded-2xl bg-white p-10 text-center text-gray-600 ring-1 ring-gray-100">
-          לא נמצאו מורים שמתאימים לחיפוש. נסו להרחיב את הסינון או לכלול מורים אונליין.
+          לא נמצאו מורים שמתאימים לחיפוש. נסו להרחיב את הסינון או לכלול מורים אונליין, או{' '}
+          <Link href="/requests/new" className="font-medium text-indigo-700 hover:underline">
+            פרסמו בקשת לימוד
+          </Link>{' '}
+          ומורים יפנו אליכם.
         </div>
       ) : (
         <ul className="space-y-4">

@@ -47,6 +47,9 @@ async function Dashboard() {
           <Link href="/messages" className="rounded-lg bg-white px-5 py-2.5 font-medium ring-1 ring-gray-200 hover:bg-gray-50">
             ההודעות שלי
           </Link>
+          <Link href="/requests/mine" className="rounded-lg bg-white px-5 py-2.5 font-medium ring-1 ring-gray-200 hover:bg-gray-50">
+            בקשות הלימוד שלי
+          </Link>
           <Link href="/search" className="rounded-lg bg-indigo-600 px-5 py-2.5 font-medium text-white hover:bg-indigo-700">
             לחיפוש מורים
           </Link>
