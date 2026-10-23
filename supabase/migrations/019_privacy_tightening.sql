@@ -4,8 +4,7 @@
 -- 1. פרופילים: פרופיל של מורה ציבורי (זה כל הרעיון). פרופיל של תלמיד
 --    (שם מלא, תמונה) גלוי רק לו עצמו ולמי שמתכתב איתו — לא לכל העולם.
 -- 2. ביקורות: שם הכותב מוצג כשם פרטי + אות ראשונה של שם המשפחה.
--- 3. טלפון מורה: גם אם המורה בחר/ה לשתף — הוא נחשף לתלמיד רק אחרי
---    שהמורה ענה לו בצ'אט (כלומר שני הצדדים מעוניינים).
+-- 3. טלפון מורה: ללא שינוי — מוצג רק אם המורה בחר/ה לשתף, ורק למשתמשים מחוברים.
 -- =====================================================================
 
 
@@ -60,7 +59,9 @@ revoke execute on function public.teacher_reviews(uuid) from public;
 grant  execute on function public.teacher_reviews(uuid) to anon, authenticated;
 
 
--- ---------- 3. טלפון מורה רק אחרי שהמורה ענה בצ'אט ----------
+-- ---------- 3. טלפון מורה ----------
+-- מורה שבחר/ה לשתף את הטלפון — הוא מוצג בפרופיל (עם קישור לוואטסאפ) לכל משתמש מחובר.
+-- מורה שלא בחר/ה — רק צ'אט באתר. (זו ההגדרה הקיימת מ-002; מוגדרת כאן מחדש למקרה שהשתנתה.)
 drop policy if exists "contacts: visible teacher phone" on public.user_contacts;
 create policy "contacts: visible teacher phone"
   on public.user_contacts for select to authenticated
@@ -68,14 +69,4 @@ create policy "contacts: visible teacher phone"
     show_phone
     and phone is not null
     and exists (select 1 from public.teachers t where t.id = user_id and t.is_active)
-    and exists (
-      select 1
-        from public.conversations c
-        join public.messages m on m.conversation_id = c.id
-       where m.sender_id = user_contacts.user_id
-         and (
-           (c.teacher_id = user_contacts.user_id and c.student_id = (select auth.uid()))
-           or (c.student_id = user_contacts.user_id and c.teacher_id = (select auth.uid()))
-         )
-    )
   );

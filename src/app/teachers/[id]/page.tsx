@@ -240,9 +240,7 @@ async function TeacherProfile({ params }: Props) {
                   </a>
                 </>
               ) : (
-                <p className="text-sm text-gray-500">
-                  כדי לשמור על פרטיות, פרטי קשר ישירים מוצגים רק אחרי ש{name} עונה לך בצ&apos;אט (ואם בחר/ה לשתף אותם).
-                </p>
+                <p className="text-sm text-gray-500">{name} מעדיף/ה שיחה דרך הצ&apos;אט באתר.</p>
               )}
             </div>
           )}
