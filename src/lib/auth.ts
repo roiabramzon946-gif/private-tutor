@@ -1,3 +1,4 @@
+import { cache } from 'react'
 import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import type { UserRole } from '@/types/db'
@@ -10,8 +11,9 @@ export type CurrentUser = {
   avatarUrl: string | null
 }
 
-// המשתמש המחובר (מאומת דרך getClaims) + הפרופיל שלו
-export async function getCurrentUser(): Promise<CurrentUser | null> {
+// המשתמש המחובר (מאומת דרך getClaims) + הפרופיל שלו.
+// עטוף ב-cache: הכותרת והעמוד קוראים לזה באותה בקשה, וככה הפנייה למסד נעשית פעם אחת בלבד
+export const getCurrentUser = cache(async (): Promise<CurrentUser | null> => {
   const supabase = await createClient()
   const { data } = await supabase.auth.getClaims()
   const claims = data?.claims
@@ -32,7 +34,7 @@ export async function getCurrentUser(): Promise<CurrentUser | null> {
     fullName: profile.full_name,
     avatarUrl: profile.avatar_url,
   }
-}
+})
 
 // מונע הפניה לאתרים חיצוניים דרך ?next=
 export function safeNext(value: unknown): string | null {
