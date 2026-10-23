@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import Link from 'next/link'
 import { Heebo } from 'next/font/google'
 import { SiteHeader } from '@/components/SiteHeader'
 import { PageBand } from '@/components/PageBand'
@@ -23,8 +24,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <PageBand />
           <div className="relative">{children}</div>
         </div>
-        <footer className="border-t border-gray-200 bg-white py-6 text-center text-sm text-gray-500">
-          © TutorIL
+        <footer className="border-t border-gray-200 bg-white py-6 text-sm text-gray-500">
+          <div className="mx-auto flex max-w-5xl flex-wrap items-center justify-center gap-x-5 gap-y-2 px-4">
+            <span>© TutorIL</span>
+            <Link href="/terms" className="hover:text-indigo-700">
+              תנאי שימוש
+            </Link>
+            <Link href="/privacy" className="hover:text-indigo-700">
+              מדיניות פרטיות
+            </Link>
+          </div>
         </footer>
       </body>
     </html>

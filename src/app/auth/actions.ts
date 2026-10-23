@@ -7,6 +7,7 @@ import { safeNext } from '@/lib/auth'
 import { translateAuthError } from '@/lib/errors'
 import { normalizePhone } from '@/lib/phone'
 import type { FormState } from '@/types/db'
+import { LEGAL_VERSION } from '@/lib/legal'
 
 function str(formData: FormData, key: string) {
   const v = formData.get(key)
@@ -26,6 +27,8 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   if (!phone) return { error: 'מספר הטלפון לא תקין. לדוגמה: 050-1234567' }
   if (typeof password !== 'string' || password.length < 8)
     return { error: 'הסיסמה צריכה להכיל לפחות 8 תווים' }
+  if (formData.get('accept_terms') !== 'on')
+    return { error: 'כדי להירשם צריך לאשר את תנאי השימוש ומדיניות הפרטיות' }
 
   const supabase = await createClient()
   const origin = (await headers()).get('origin') ?? 'http://localhost:3000'
@@ -35,7 +38,14 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
     email,
     password,
     options: {
-      data: { role, full_name: fullName, phone, show_phone: showPhone },
+      data: {
+        role,
+        full_name: fullName,
+        phone,
+        show_phone: showPhone,
+        terms_version: LEGAL_VERSION,
+        terms_accepted_at: new Date().toISOString(),
+      },
       emailRedirectTo: `${origin}/auth/callback?next=${encodeURIComponent(next)}`,
     },
   })

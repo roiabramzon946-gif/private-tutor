@@ -80,6 +80,19 @@ export function SignupForm({ defaultRole }: { defaultRole: 'student' | 'teacher'
         hint="לפחות 8 תווים"
         required
       />
+      <label className="flex items-start gap-2 text-sm text-gray-700">
+        <input type="checkbox" name="accept_terms" required className="mt-0.5 size-4 shrink-0 accent-indigo-600" />
+        <span>
+          קראתי ואני מסכים/ה ל
+          <Link href="/terms" target="_blank" className="font-medium text-indigo-700 underline">
+            תנאי השימוש
+          </Link>{' '}
+          ול
+          <Link href="/privacy" target="_blank" className="font-medium text-indigo-700 underline">
+            מדיניות הפרטיות
+          </Link>
+        </span>
+      </label>
       <FormMessage state={state} />
       <SubmitButton pending={pending} className="w-full">
         {role === 'teacher' ? 'הרשמה כמורה' : 'הרשמה'}
