@@ -84,6 +84,13 @@ async function TeacherProfile({ params }: Props) {
     : { data: null }
   const phone = (contact?.phone as string | null) ?? null
 
+  const { data: extraCitiesData } = await supabase
+    .from('teacher_cities')
+    .select('city')
+    .eq('teacher_id', teacher.id)
+    .order('created_at')
+  const extraCities = (extraCitiesData ?? []).map((c) => c.city as string)
+
   const reviews = (reviewsData ?? []) as unknown as ReviewRow[]
   const myReview = user ? reviews.find((r) => r.student_id === user.id) ?? null : null
 
@@ -120,6 +127,9 @@ async function TeacherProfile({ params }: Props) {
               {[teacher.city, teacher.region].filter(Boolean).join(', ')}
               {teacher.years_experience != null && <> · {teacher.years_experience} שנות ניסיון</>}
             </p>
+            {teacher.teaches_in_person && extraCities.length > 0 && (
+              <p className="mt-1 text-sm text-gray-600">מלמד/ת גם ב: {extraCities.join(', ')}</p>
+            )}
             <Rating avg={teacher.rating_avg} count={teacher.reviews_count} className="mt-2" />
             <div className="mt-3 flex flex-wrap gap-2 text-sm">
               {teacher.teaches_in_person && (

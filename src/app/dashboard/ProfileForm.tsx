@@ -9,12 +9,14 @@ import { SubmitButton } from '@/components/SubmitButton'
 import type { Locality, Subject } from '@/types/db'
 import { EmailNotificationsField } from '@/components/EmailNotificationsField'
 import { groupSubjects } from '@/lib/subjects'
+import { ExtraCitiesField } from './ExtraCitiesField'
 
 export type ProfileValues = {
   fullName: string
   bio: string
   city: string
   region: string
+  extraCities: string[]
   hourlyRate: number | null
   yearsExperience: number | null
   teachesOnline: boolean
@@ -87,6 +89,9 @@ export function ProfileForm({ subjects, localities, values }: Props) {
             max={70}
             defaultValue={values.yearsExperience ?? ''}
           />
+          <div className="sm:col-span-2">
+            <ExtraCitiesField initial={values.extraCities} listId="locality-options" />
+          </div>
         </div>
 
         <div className="grid gap-4 sm:grid-cols-2">

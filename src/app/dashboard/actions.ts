@@ -56,6 +56,19 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
   }
 
   if (teachesInPerson && !city) return { error: 'לשיעורים פרונטליים צריך לבחור עיר' }
+
+  // ערים נוספות: רק מרשימת היישובים, בלי כפילויות ובלי העיר הראשית
+  const extraInput = [...new Set(formData.getAll('extra_cities').map((v) => String(v).trim()).filter(Boolean))]
+    .filter((c) => c !== city)
+  if (extraInput.length > 10) return { error: 'אפשר להוסיף עד 10 ערים נוספות' }
+  let extraCities: string[] = []
+  if (extraInput.length) {
+    const { data: locs } = await supabase.from('localities').select('name').in('name', extraInput)
+    const valid = new Set((locs ?? []).map((l) => l.name as string))
+    const invalid = extraInput.filter((c) => !valid.has(c))
+    if (invalid.length) return { error: `העיר "${invalid[0]}" לא נמצאה ברשימת היישובים` }
+    extraCities = extraInput
+  }
   if (phoneRaw && !phone) return { error: 'מספר הטלפון לא תקין. לדוגמה: 050-1234567' }
   if (showPhone && !phone) return { error: 'כדי להציג טלפון בפרופיל צריך למלא מספר' }
 
@@ -90,6 +103,16 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
     .update({ phone, show_phone: showPhone, email_notifications: emailNotifications })
     .eq('user_id', user.id)
   if (contactError) return { error: `שמירת הטלפון נכשלה: ${contactError.message}` }
+
+  // סנכרון ערים נוספות
+  const { error: citiesDelError } = await supabase.from('teacher_cities').delete().eq('teacher_id', user.id)
+  if (citiesDelError) return { error: `שמירת הערים נכשלה: ${citiesDelError.message}` }
+  if (extraCities.length) {
+    const { error: citiesError } = await supabase
+      .from('teacher_cities')
+      .insert(extraCities.map((c) => ({ teacher_id: user.id, city: c })))
+    if (citiesError) return { error: `שמירת הערים נכשלה: ${citiesError.message}` }
+  }
 
   // סנכרון מקצועות: מוחקים את מה שהוסר, מוסיפים/מעדכנים את מה שנבחר
   const del = supabase.from('teacher_subjects').delete().eq('teacher_id', user.id)
