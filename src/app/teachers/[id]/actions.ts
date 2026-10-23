@@ -41,7 +41,10 @@ export async function submitReview(_prev: FormState, formData: FormData): Promis
         .from('reviews')
         .insert({ teacher_id: teacherId, student_id: user.id, rating, comment: comment || null })
 
-  if (error) return { error: `שמירת הביקורת נכשלה: ${error.message}` }
+  if (error) {
+    console.error('submitReview', error.message)
+    return { error: 'שמירת הביקורת נכשלה. נסו שוב.' }
+  }
 
   revalidatePath(`/teachers/${teacherId}`)
   return { ok: true, message: existing ? 'הביקורת עודכנה. תודה!' : 'הביקורת נשמרה. תודה!' }

@@ -1,3 +1,4 @@
+import { headers } from 'next/headers'
 import { createClient } from '@/lib/supabase/server'
 import type { UserRole } from '@/types/db'
 
@@ -38,4 +39,10 @@ export function safeNext(value: unknown): string | null {
   if (typeof value !== 'string') return null
   if (!value.startsWith('/') || value.startsWith('//')) return null
   return value
+}
+
+// כתובת האתר לקישורים במיילים (אימות, איפוס סיסמה). בפרודקשן קבועה, כדי שלא תילקח מכותרת שהדפדפן שולח
+export async function siteOrigin(): Promise<string> {
+  if (process.env.VERCEL_ENV === 'production') return 'https://tutoril.co'
+  return (await headers()).get('origin') ?? 'http://localhost:3000'
 }

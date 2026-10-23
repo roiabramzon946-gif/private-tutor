@@ -63,7 +63,8 @@ export async function createRequest(_prev: FormState, formData: FormData): Promi
   if (error) {
     if (error.message.includes('too many open requests'))
       return { error: 'אפשר להחזיק עד 3 בקשות פתוחות. סגרו בקשה קיימת כדי לפרסם חדשה.' }
-    return { error: `פרסום הבקשה נכשל: ${error.message}` }
+    console.error('createRequest', error.message)
+    return { error: 'פרסום הבקשה נכשל. נסו שוב.' }
   }
 
   revalidatePath('/requests/mine')
@@ -98,7 +99,9 @@ export async function sendOffer(_prev: FormState, formData: FormData): Promise<F
     if (m.includes('already offered')) return { error: 'כבר שלחת הצעה על הבקשה הזו' }
     if (m.includes('request full')) return { error: 'הבקשה כבר קיבלה את מספר ההצעות המרבי' }
     if (m.includes('request closed')) return { error: 'הבקשה נסגרה' }
-    return { error: `שליחת ההצעה נכשלה: ${m}` }
+    if (m.includes('rate limit')) return { error: 'הגעת למגבלת השיחות החדשות להיום. נסו שוב מחר.' }
+    console.error('sendOffer', m)
+    return { error: 'שליחת ההצעה נכשלה. נסו שוב.' }
   }
 
   redirect(`/messages/${data as string}`)

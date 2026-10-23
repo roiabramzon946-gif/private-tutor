@@ -32,7 +32,7 @@ export function AvatarUploader({ userId, name, url }: { userId: string; name: st
     })
     if (uploadError) {
       setBusy(false)
-      return setError(`ההעלאה נכשלה: ${uploadError.message}`)
+      return setError('ההעלאה נכשלה. נסו שוב או בחרו תמונה אחרת.')
     }
 
     const { data } = supabase.storage.from('avatars').getPublicUrl(path)
@@ -42,7 +42,7 @@ export function AvatarUploader({ userId, name, url }: { userId: string; name: st
       .eq('id', userId)
 
     setBusy(false)
-    if (updateError) return setError(`שמירת התמונה נכשלה: ${updateError.message}`)
+    if (updateError) return setError('שמירת התמונה נכשלה. נסו שוב.')
     router.refresh()
   }
 

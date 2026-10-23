@@ -110,7 +110,7 @@ async function SearchContent({ searchParams }: Props) {
 
       <div className="mt-6 mb-4 text-gray-600">
         {error ? (
-          <span className="text-red-600">שגיאה בחיפוש: {error.message}</span>
+          <span className="text-red-600">החיפוש נכשל. נסו לרענן את הדף.</span>
         ) : (
           <>
             נמצאו <strong className="text-gray-900">{total}</strong> מורים

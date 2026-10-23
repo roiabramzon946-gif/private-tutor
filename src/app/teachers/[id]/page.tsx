@@ -17,6 +17,7 @@ import { startConversation } from '@/app/messages/actions'
 import { formatPhone, whatsappUrl } from '@/lib/phone'
 
 type Props = { params: Promise<{ id: string }> }
+type PageProps = Props & { searchParams: Promise<{ chat_error?: string }> }
 
 type TeacherRow = {
   id: string
@@ -92,11 +93,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default function TeacherPage({ params }: Props) {
+export default function TeacherPage({ params, searchParams }: PageProps) {
   return (
     <main className="mx-auto max-w-4xl px-4 py-8">
       <Suspense fallback={<div className="h-96 animate-pulse rounded-2xl bg-white" />}>
-        <TeacherProfile params={params} />
+        <TeacherProfile params={params} searchParams={searchParams} />
       </Suspense>
     </main>
   )
@@ -104,8 +105,9 @@ export default function TeacherPage({ params }: Props) {
 
 const dateFmt = new Intl.DateTimeFormat('he-IL', { timeZone: 'Asia/Jerusalem', month: 'long', year: 'numeric' })
 
-async function TeacherProfile({ params }: Props) {
+async function TeacherProfile({ params, searchParams }: PageProps) {
   const { id } = await params
+  const { chat_error: chatError } = await searchParams
   if (!/^[0-9a-f-]{36}$/i.test(id)) notFound()
 
   const supabase = await createClient()
@@ -213,6 +215,7 @@ async function TeacherProfile({ params }: Props) {
               כדי לשלוח הודעה ל{name} או לראות את פרטי הקשר.
             </p>
           ) : (
+            <>
             <div className="flex flex-wrap items-center gap-3">
               <form action={startConversation}>
                 <input type="hidden" name="teacher_id" value={teacher.id} />
@@ -242,6 +245,14 @@ async function TeacherProfile({ params }: Props) {
                 <p className="text-sm text-gray-500">{name} מעדיף/ה שיחה דרך הצ&apos;אט באתר.</p>
               )}
             </div>
+            {chatError && (
+              <p className="mt-2 text-sm text-red-600">
+                {chatError === 'limit'
+                  ? 'הגעתם למגבלת השיחות החדשות להיום. נסו שוב מחר.'
+                  : 'פתיחת השיחה נכשלה. נסו שוב.'}
+              </p>
+            )}
+            </>
           )}
           {user && (
             <div className="mt-4 flex justify-end">

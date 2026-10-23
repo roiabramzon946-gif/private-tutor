@@ -1,6 +1,6 @@
 'use server'
 
-import { headers } from 'next/headers'
+import { siteOrigin } from '@/lib/auth'
 import { createClient } from '@/lib/supabase/server'
 import { translateAuthError } from '@/lib/errors'
 import type { FormState } from '@/types/db'
@@ -12,7 +12,7 @@ export async function requestPasswordReset(_prev: FormState, formData: FormData)
   if (!email.includes('@')) return { error: 'כתובת המייל לא תקינה' }
 
   const supabase = await createClient()
-  const origin = (await headers()).get('origin') ?? 'http://localhost:3000'
+  const origin = await siteOrigin()
   const { error } = await supabase.auth.resetPasswordForEmail(email, {
     redirectTo: `${origin}/auth/callback?next=/reset-password`,
   })
@@ -23,7 +23,7 @@ export async function requestPasswordReset(_prev: FormState, formData: FormData)
     console.error('resetPasswordForEmail failed:', error.message)
     return { error: /rate limit|too many/i.test(error.message)
       ? translateAuthError(error.message)
-      : `שליחת המייל נכשלה (${error.message}). נסו שוב בעוד כמה דקות.` }
+      : 'שליחת המייל נכשלה. נסו שוב בעוד כמה דקות.' }
   }
 
   return {

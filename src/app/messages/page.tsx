@@ -36,7 +36,7 @@ async function ConversationList() {
 
   const supabase = await createClient()
   const { data, error } = await supabase.rpc('my_conversations')
-  if (error) return <p className="text-red-600">שגיאה בטעינת ההודעות: {error.message}</p>
+  if (error) return <p className="text-red-600">לא הצלחנו לטעון את ההודעות. נסו לרענן את הדף.</p>
 
   const conversations = (data ?? []) as ConversationSummary[]
   const now = new Date()

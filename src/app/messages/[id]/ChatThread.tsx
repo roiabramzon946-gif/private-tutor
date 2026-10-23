@@ -130,7 +130,11 @@ export function ChatThread({ conversationId, userId, otherName, initialMessages 
 
     if (error || !data) {
       setMessages((prev) => prev.map((m) => (m.id === temp.id ? { ...m, pending: false, failed: true } : m)))
-      setError('ההודעה לא נשלחה. בדקו את החיבור ונסו שוב.')
+      setError(
+        error?.message.includes('rate limit')
+          ? 'שלחתם הרבה הודעות בזמן קצר. חכו דקה ונסו שוב.'
+          : 'ההודעה לא נשלחה. בדקו את החיבור ונסו שוב.'
+      )
       setText(body)
       return
     }

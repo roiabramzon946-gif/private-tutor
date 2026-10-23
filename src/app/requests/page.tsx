@@ -102,7 +102,7 @@ async function Board({ searchParams }: Props) {
       </form>
 
       {error ? (
-        <p className="text-red-600">שגיאה בטעינת הבקשות: {error.message}</p>
+        <p className="text-red-600">לא הצלחנו לטעון את הבקשות. נסו לרענן את הדף.</p>
       ) : requests.length === 0 ? (
         <div className="rounded-2xl bg-white p-10 text-center text-gray-600 ring-1 ring-gray-100">
           {onlyMine

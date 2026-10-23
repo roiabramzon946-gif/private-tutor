@@ -31,7 +31,10 @@ export async function startConversation(formData: FormData) {
       .insert({ student_id: user.id, teacher_id: teacherId })
       .select('id')
       .single()
-    if (error || !created) redirect(`/teachers/${teacherId}?chat_error=1`)
+    if (error || !created) {
+      const reason = error?.message.includes('rate limit') ? 'limit' : '1'
+      redirect(`/teachers/${teacherId}?chat_error=${reason}`)
+    }
     id = created.id as string
   }
 

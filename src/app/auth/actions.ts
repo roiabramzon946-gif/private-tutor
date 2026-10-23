@@ -1,9 +1,8 @@
 'use server'
 
-import { headers } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
-import { safeNext } from '@/lib/auth'
+import { safeNext, siteOrigin } from '@/lib/auth'
 import { translateAuthError } from '@/lib/errors'
 import { normalizePhone } from '@/lib/phone'
 import type { FormState } from '@/types/db'
@@ -31,7 +30,7 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
     return { error: 'כדי להירשם צריך לאשר את תנאי השימוש ומדיניות הפרטיות' }
 
   const supabase = await createClient()
-  const origin = (await headers()).get('origin') ?? 'http://localhost:3000'
+  const origin = await siteOrigin()
   const next = role === 'teacher' ? '/dashboard' : '/search'
 
   const { data, error } = await supabase.auth.signUp({

@@ -7,6 +7,12 @@ import type { FormState } from '@/types/db'
 import { normalizePhone } from '@/lib/phone'
 import { ACADEMIC_CATEGORY, AVAILABILITY_VALUES, NO_LEVEL_CATEGORY, isLevel } from '@/lib/levels'
 
+// שגיאה טכנית נרשמת בלוג, והמשתמש מקבל הודעה כללית בעברית
+function failed(what: string, err: { message: string }) {
+  console.error(what, err.message)
+  return { error: `${what}. נסו שוב.` }
+}
+
 function text(formData: FormData, key: string) {
   const v = formData.get(key)
   return typeof v === 'string' ? v.trim() : ''
@@ -82,7 +88,7 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
     .from('profiles')
     .update({ full_name: fullName })
     .eq('id', user.id)
-  if (profileError) return { error: `שמירה נכשלה: ${profileError.message}` }
+  if (profileError) return failed('שמירה נכשלה', profileError)
 
   const availability = formData
     .getAll('availability')
@@ -103,22 +109,22 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
       is_active: isActive,
     })
     .eq('id', user.id)
-  if (teacherError) return { error: `שמירה נכשלה: ${teacherError.message}` }
+  if (teacherError) return failed('שמירה נכשלה', teacherError)
 
   const { error: contactError } = await supabase
     .from('user_contacts')
     .update({ phone, show_phone: showPhone, email_notifications: emailNotifications })
     .eq('user_id', user.id)
-  if (contactError) return { error: `שמירת הטלפון נכשלה: ${contactError.message}` }
+  if (contactError) return failed('שמירת הטלפון נכשלה', contactError)
 
   // סנכרון ערים נוספות
   const { error: citiesDelError } = await supabase.from('teacher_cities').delete().eq('teacher_id', user.id)
-  if (citiesDelError) return { error: `שמירת הערים נכשלה: ${citiesDelError.message}` }
+  if (citiesDelError) return failed('שמירת הערים נכשלה', citiesDelError)
   if (extraCities.length) {
     const { error: citiesError } = await supabase
       .from('teacher_cities')
       .insert(extraCities.map((c) => ({ teacher_id: user.id, city: c })))
-    if (citiesError) return { error: `שמירת הערים נכשלה: ${citiesError.message}` }
+    if (citiesError) return failed('שמירת הערים נכשלה', citiesError)
   }
 
   // סנכרון מקצועות: מוחקים את מה שהוסר, מוסיפים/מעדכנים את מה שנבחר
@@ -126,7 +132,7 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
   const { error: delError } = subjectIds.length
     ? await del.not('subject_id', 'in', `(${subjectIds.join(',')})`)
     : await del
-  if (delError) return { error: `שמירת המקצועות נכשלה: ${delError.message}` }
+  if (delError) return failed('שמירת המקצועות נכשלה', delError)
 
   if (subjectIds.length) {
     // רמות: רק מהרשימה הקבועה. מקצוע אקדמי = "אקדמיה"; פסיכומטרי ומבחנים = בלי רמות
@@ -145,7 +151,7 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
     const { error: upsertError } = await supabase
       .from('teacher_subjects')
       .upsert(rows, { onConflict: 'teacher_id,subject_id' })
-    if (upsertError) return { error: `שמירת המקצועות נכשלה: ${upsertError.message}` }
+    if (upsertError) return failed('שמירת המקצועות נכשלה', upsertError)
   }
 
   revalidatePath('/dashboard')
@@ -174,7 +180,7 @@ export async function saveAccount(_prev: FormState, formData: FormData): Promise
       .update({ phone, email_notifications: emailNotifications })
       .eq('user_id', user.id),
   ])
-  if (e1 || e2) return { error: `שמירה נכשלה: ${(e1 ?? e2)!.message}` }
+  if (e1 || e2) return failed('שמירה נכשלה', (e1 ?? e2)!)
 
   revalidatePath('/dashboard')
   return { ok: true, message: 'הפרטים נשמרו' }
