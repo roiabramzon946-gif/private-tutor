@@ -1,6 +1,6 @@
 -- =====================================================================
 -- Migration 015 — מייל התראת הצ'אט: יישור לימין (RTL) בכל תוכנות המייל
--- (Gmail הציג את המייל צמוד לשמאל). אותה פונקציה כמו ב-007, רק עטיפה מתוקנת.
+-- (Gmail הציג את המייל צמוד לשמאל). אותה פונקציה כמו ב-007, עם עטיפת טבלה שעובדת בכל תוכנות המייל.
 -- =====================================================================
 
 create or replace function public.send_unread_email_notifications()
@@ -76,8 +76,9 @@ begin
     v_name := replace(replace(replace(r.sender_name, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
     v_subject := 'הודעה חדשה מ' || r.sender_name || ' | TutorIL';
     v_html :=
-      '<div dir="rtl" style="direction:rtl;text-align:right;width:100%">'
-      || '<div style="font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#111827;max-width:480px;margin:0 auto;text-align:right">'
+      '<table role="presentation" width="100%" cellpadding="0" cellspacing="0" border="0" dir="rtl"><tr><td align="center">'
+      || '<table role="presentation" width="480" cellpadding="0" cellspacing="0" border="0" dir="rtl" style="max-width:480px;width:100%"><tr>'
+      || '<td dir="rtl" align="right" style="direction:rtl;text-align:right;font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#111827">'
       || '<h2 style="color:#4338ca;margin:0 0 12px">יש לך הודעה חדשה</h2>'
       || '<p>' || v_name || ' שלח/ה לך '
       || case when r.unread > 1 then r.unread || ' הודעות' else 'הודעה' end
@@ -86,7 +87,7 @@ begin
       || '" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">'
       || 'לקריאה ולתשובה</a></p>'
       || '<p style="font-size:13px;color:#6b7280">לא רוצה לקבל התראות? אפשר לכבות אותן ב"האזור שלי" באתר.</p>'
-      || '</div></div>';
+      || '</td></tr></table></td></tr></table>';
 
     if coalesce(v_provider, 'gmail') = 'gmail' then
       perform net.http_post(
