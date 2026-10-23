@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import { CONTACT_EMAIL } from '@/lib/legal'
 import { Heebo } from 'next/font/google'
 import { SiteHeader } from '@/components/SiteHeader'
 import { PageBand } from '@/components/PageBand'
@@ -33,6 +34,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/privacy" className="hover:text-indigo-700">
               מדיניות פרטיות
             </Link>
+            <a href={`mailto:${CONTACT_EMAIL}`} className="hover:text-indigo-700">
+              צור קשר
+            </a>
           </div>
         </footer>
       </body>
