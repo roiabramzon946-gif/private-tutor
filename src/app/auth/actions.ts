@@ -62,7 +62,7 @@ export async function signup(_prev: FormState, formData: FormData): Promise<Form
   if (!data.session) {
     return {
       ok: true,
-      message: `שלחנו מייל אימות ל-${email}. לחצו על הקישור במייל כדי להשלים את ההרשמה.`,
+      message: `שלחנו מייל אימות ל-${email}. לחצו על הקישור במייל כדי להשלים את ההרשמה. לא הגיע תוך כמה דקות? בדקו בספאם (ובמייל של אוניברסיטה או עבודה גם ב"הסגר" / Quarantine).`,
     }
   }
 
