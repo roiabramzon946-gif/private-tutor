@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { notFound, redirect } from 'next/navigation'
@@ -7,6 +8,8 @@ import { Avatar } from '@/components/Avatar'
 import type { ChatMessage } from '@/types/chat'
 import { ChatThread } from './ChatThread'
 import { ReportButton } from '@/components/ReportButton'
+
+export const metadata: Metadata = { title: 'שיחה' }
 
 type Props = { params: Promise<{ id: string }> }
 

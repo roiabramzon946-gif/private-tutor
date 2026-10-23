@@ -1,4 +1,7 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
+import { cacheLife } from 'next/cache'
+import { createPublicClient } from '@/lib/supabase/public'
 import { Suspense } from 'react'
 import { notFound } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
@@ -38,6 +41,53 @@ type ReviewRow = {
   created_at: string
   student_id: string
   profiles: { full_name: string } | null
+}
+
+// כותרת ותיאור לגוגל ולשיתוף בוואטסאפ, לפי פרטי המורה (נתונים ציבוריים, במטמון לשעה)
+async function getTeacherSeo(id: string) {
+  'use cache'
+  cacheLife('hours')
+  const supabase = createPublicClient()
+  const { data } = await supabase
+    .from('teachers')
+    .select('bio, hourly_rate, city, teaches_online, profiles ( full_name ), teacher_subjects ( subjects ( name ) )')
+    .eq('id', id)
+    .maybeSingle()
+  return data as unknown as {
+    bio: string | null
+    hourly_rate: number | null
+    city: string | null
+    teaches_online: boolean
+    profiles: { full_name: string }
+    teacher_subjects: { subjects: { name: string } }[]
+  } | null
+}
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const { id } = await params
+  if (!/^[0-9a-f-]{36}$/i.test(id)) return {}
+  const t = await getTeacherSeo(id)
+  if (!t) return { title: 'המורה לא נמצא/ה' }
+
+  const name = t.profiles.full_name
+  const subjects = t.teacher_subjects.map((ts) => ts.subjects.name).slice(0, 3)
+  const where = t.city ? ` ב${t.city}` : t.teaches_online ? ' אונליין' : ''
+  const title = subjects.length
+    ? `${name} — מורה פרטי ל${subjects.join(', ')}${where}`
+    : `${name} — מורה פרטי${where}`
+  const parts = [
+    t.bio ? t.bio.replace(/\s+/g, ' ').slice(0, 140) : null,
+    t.hourly_rate ? `₪${t.hourly_rate} לשעה.` : null,
+    'פנייה ישירה בצ\'אט ב-TutorIL.',
+  ].filter(Boolean)
+  const description = parts.join(' ')
+
+  return {
+    title,
+    description,
+    alternates: { canonical: `/teachers/${id}` },
+    openGraph: { title, description, type: 'profile' },
+  }
 }
 
 export default function TeacherPage({ params }: Props) {

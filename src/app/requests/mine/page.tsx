@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
@@ -6,6 +7,8 @@ import { getCurrentUser } from '@/lib/auth'
 import { daysAgo, offersLabel } from '@/lib/dates'
 import { MAX_OFFERS_PER_REQUEST, REQUEST_DAYS_OPEN } from '@/types/requests'
 import { closeRequest } from '../actions'
+
+export const metadata: Metadata = { title: 'הבקשות שלי' }
 
 type SP = Record<string, string | string[] | undefined>
 type Props = { searchParams: Promise<SP> }

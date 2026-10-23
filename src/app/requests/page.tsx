@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
@@ -10,6 +11,8 @@ import { inputClass } from '@/components/fields'
 import { REGIONS } from '@/types/db'
 import { MAX_OFFERS_PER_REQUEST, type OpenRequest } from '@/types/requests'
 import { OfferForm } from './OfferForm'
+
+export const metadata: Metadata = { title: 'בקשות לימוד' }
 
 type SP = Record<string, string | string[] | undefined>
 type Props = { searchParams: Promise<SP> }

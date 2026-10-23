@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
@@ -8,6 +9,8 @@ import { AvatarUploader } from './AvatarUploader'
 import { ProfileForm, type ProfileValues } from './ProfileForm'
 import { AccountForm } from './AccountForm'
 import { SubscriptionCard } from './SubscriptionCard'
+
+export const metadata: Metadata = { title: 'האזור שלי' }
 
 export default function DashboardPage() {
   return (

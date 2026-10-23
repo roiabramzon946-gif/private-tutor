@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
@@ -5,6 +6,8 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import { Avatar } from '@/components/Avatar'
 import type { ConversationSummary } from '@/types/chat'
+
+export const metadata: Metadata = { title: 'הודעות' }
 
 export default function MessagesPage() {
   return (

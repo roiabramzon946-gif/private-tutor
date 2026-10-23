@@ -1,7 +1,10 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getCurrentUser, safeNext } from '@/lib/auth'
 import { LoginForm } from './LoginForm'
+
+export const metadata: Metadata = { title: 'התחברות' }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 

@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { createClient } from '@/lib/supabase/server'
@@ -6,6 +7,8 @@ import { REGIONS } from '@/types/db'
 import { SearchFilters, type SearchValues } from '@/components/SearchFilters'
 import { TeacherCard } from '@/components/TeacherCard'
 import type { TeacherSearchResult } from '@/types/search'
+
+export const metadata: Metadata = { title: 'חיפוש מורים פרטיים', description: 'חיפוש מורה פרטי לפי מקצוע, עיר, מחיר ושיעורים אונליין: מתמטיקה, אנגלית, פסיכומטרי, מקצועות אקדמיים ועוד.' }
 
 const PAGE_SIZE = 10
 

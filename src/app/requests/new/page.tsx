@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
@@ -5,6 +6,8 @@ import { getCurrentUser } from '@/lib/auth'
 import { getLocalities, getSubjects } from '@/lib/data'
 import { MAX_OFFERS_PER_REQUEST, REQUEST_DAYS_OPEN } from '@/types/requests'
 import { RequestForm } from './RequestForm'
+
+export const metadata: Metadata = { title: 'פרסום בקשת לימוד', description: 'מחפשים מורה? פרסמו בקשה, ומורים שמלמדים את המקצוע ישלחו לכם הצעות.' }
 
 export default function NewRequestPage() {
   return (

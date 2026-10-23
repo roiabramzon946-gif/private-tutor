@@ -1,7 +1,10 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { redirect } from 'next/navigation'
 import { getCurrentUser } from '@/lib/auth'
 import { SignupForm } from './SignupForm'
+
+export const metadata: Metadata = { title: 'הרשמה', description: "הרשמה חינם ל-TutorIL — למורים פרטיים ולתלמידים. מורים מפרסמים פרופיל, תלמידים מוצאים מורה ופונים בצ'אט." }
 
 type Props = { searchParams: Promise<Record<string, string | string[] | undefined>> }
 
