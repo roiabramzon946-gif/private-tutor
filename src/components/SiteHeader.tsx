@@ -13,7 +13,10 @@ export function SiteHeader() {
         <Link href="/" dir="ltr" aria-label="TutorIL — דף הבית" className="text-xl font-extrabold tracking-tight text-gray-900">
           Tutor<span className="text-indigo-600">IL</span>
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
+        <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
+          <Link href="/" className="text-gray-700 hover:text-indigo-700">
+            דף הבית
+          </Link>
           <Link href="/search" className="text-gray-700 hover:text-indigo-700">
             חיפוש מורים
           </Link>
@@ -50,7 +53,7 @@ async function UserMenu() {
   const unreadCount = Number(unread ?? 0)
 
   return (
-    <div className="flex items-center gap-3">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
       <Link
         href={user.role === 'teacher' ? '/requests' : '/requests/mine'}
         className="text-gray-700 hover:text-indigo-700"
