@@ -108,8 +108,8 @@ export function ProfileForm({ subjects, localities, values }: Props) {
           <label className="flex items-start gap-2 self-center text-sm text-gray-700 sm:pt-6">
             <input type="checkbox" name="show_phone" defaultChecked={values.showPhone} className="mt-0.5 size-4 accent-indigo-600" />
             <span>
-              להציג את הטלפון בפרופיל
-              <span className="block text-xs text-gray-500">אם לא — תלמידים יפנו אליך רק בצ&apos;אט באתר</span>
+              לשתף את הטלפון עם תלמידים שעניתי להם בצ&apos;אט
+              <span className="block text-xs text-gray-500">הטלפון לא מוצג לכולם — רק למי שכבר ענית לו. אחרת, כל התקשורת בצ&apos;אט באתר.</span>
             </span>
           </label>
         </div>

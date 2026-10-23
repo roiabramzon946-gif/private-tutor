@@ -60,14 +60,14 @@ export function SignupForm({ defaultRole }: { defaultRole: 'student' | 'teacher'
         required
         hint={
           role === 'teacher'
-            ? 'את/ה מחליט/ה אם להציג אותו בפרופיל. תלמידים תמיד יוכלו לפנות אליך גם בצ\'אט באתר.'
+            ? 'המספר לא מוצג בפרופיל. אם תבחר/י לשתף אותו, הוא ייחשף רק לתלמידים שענית להם בצ\'אט.'
             : 'המספר לא מוצג למורים. אפשר לדבר איתם בצ\'אט באתר.'
         }
       />
       {role === 'teacher' && (
         <label className="flex items-start gap-2 text-sm text-gray-700">
           <input type="checkbox" name="show_phone" className="mt-0.5 size-4 accent-indigo-600" />
-          להציג את מספר הטלפון שלי בפרופיל (רק למשתמשים מחוברים)
+          לשתף את הטלפון שלי עם תלמידים, אחרי שאני עונה להם בצ&apos;אט
         </label>
       )}
       <Field

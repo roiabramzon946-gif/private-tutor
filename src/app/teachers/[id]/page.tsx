@@ -41,8 +41,8 @@ type ReviewRow = {
   rating: number
   comment: string | null
   created_at: string
-  student_id: string
-  profiles: { full_name: string } | null
+  reviewer_name: string
+  is_mine: boolean
 }
 
 // כותרת ותיאור לגוגל ולשיתוף בוואטסאפ, לפי פרטי המורה (נתונים ציבוריים, במטמון לשעה)
@@ -120,11 +120,8 @@ async function TeacherProfile({ params }: Props) {
       )
       .eq('id', id)
       .maybeSingle(),
-    supabase
-      .from('reviews')
-      .select('id, rating, comment, created_at, student_id, profiles ( full_name )')
-      .eq('teacher_id', id)
-      .order('created_at', { ascending: false }),
+    // שם הכותב מקוצר (שם פרטי + אות), ופרופילי תלמידים לא חשופים
+    supabase.rpc('teacher_reviews', { p_teacher: id }),
     getCurrentUser(),
   ])
 
@@ -145,7 +142,7 @@ async function TeacherProfile({ params }: Props) {
   const extraCities = (extraCitiesData ?? []).map((c) => c.city as string)
 
   const reviews = (reviewsData ?? []) as unknown as ReviewRow[]
-  const myReview = user ? reviews.find((r) => r.student_id === user.id) ?? null : null
+  const myReview = user ? reviews.find((r) => r.is_mine) ?? null : null
 
   // תלמיד בלי ביקורת קיימת: בודקים אם מותר לו לכתוב (הגנה מפני ביקורות פיקטיביות)
   let reviewBlocked: string | null = null
@@ -243,7 +240,9 @@ async function TeacherProfile({ params }: Props) {
                   </a>
                 </>
               ) : (
-                <p className="text-sm text-gray-500">{name} מעדיף/ה שיחה דרך הצ&apos;אט באתר.</p>
+                <p className="text-sm text-gray-500">
+                  כדי לשמור על פרטיות, פרטי קשר ישירים מוצגים רק אחרי ש{name} עונה לך בצ&apos;אט (ואם בחר/ה לשתף אותם).
+                </p>
               )}
             </div>
           )}
@@ -335,7 +334,7 @@ async function TeacherProfile({ params }: Props) {
             {reviews.map((r) => (
               <li key={r.id} className="border-b border-gray-100 pb-5 last:border-0 last:pb-0">
                 <div className="flex flex-wrap items-center gap-2">
-                  <span className="font-semibold">{r.profiles?.full_name ?? 'תלמיד/ה'}</span>
+                  <span className="font-semibold">{r.reviewer_name}</span>
                   <Stars value={r.rating} />
                   <span className="text-xs text-gray-500">{dateFmt.format(new Date(r.created_at))}</span>
                 </div>
