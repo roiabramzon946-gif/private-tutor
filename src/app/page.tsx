@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getLocalities, getSubjects } from '@/lib/data'
 import { SearchFilters } from '@/components/SearchFilters'
 import { TeacherCard } from '@/components/TeacherCard'
+import { HeroDoodles } from '@/components/HeroDoodles'
 import type { TeacherSearchResult } from '@/types/search'
 
 const POPULAR = [
@@ -18,8 +19,9 @@ const POPULAR = [
 export default function Home() {
   return (
     <main>
-      <section className="bg-gradient-to-b from-indigo-50 to-gray-50">
-        <div className="mx-auto max-w-5xl px-4 pt-14 pb-10">
+      <section className="relative overflow-hidden bg-gradient-to-b from-indigo-50 to-gray-50">
+        <HeroDoodles />
+        <div className="relative mx-auto max-w-5xl px-4 pt-14 pb-10">
           <h1 className="text-4xl font-extrabold leading-tight sm:text-5xl">
             המורה הפרטי המתאים לך,
             <br />
