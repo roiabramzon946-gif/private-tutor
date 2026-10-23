@@ -3,7 +3,7 @@
 --
 -- 23 היישובים עם "(שבט)" באזור הדרום מוצגים מעכשיו כפריט אחד ברשימה.
 -- מורים, ערים נוספות ובקשות לימוד שהיו משויכים לאחד מהם עוברים לפריט החדש.
--- ח'ואלד (שבט) נמצא בצפון ולא בנגב — רק מורידים ממנו את "(שבט)".
+-- ח'ואלד (שבט) נמצא בצפון ולא בנגב — הוא מאוחד עם "ח'ואלד" שכבר קיים ברשימה.
 -- אפשר להריץ יותר מפעם אחת.
 -- =====================================================================
 
@@ -47,10 +47,20 @@ begin
   delete from public.localities
    where name like '%(שבט)%' and region = 'דרום';
 
-  -- 4. ח'ואלד בצפון: רק בלי הסוגריים (השיוכים מתעדכנים אוטומטית)
-  update public.localities
-     set name = 'ח''ואלד'
-   where name = 'ח''ואלד (שבט)';
+  -- 4. ח'ואלד בצפון: כבר קיים ברשימה גם בלי "(שבט)", אז מאחדים אליו
+  if exists (select 1 from public.localities where name = 'ח''ואלד') then
+    update public.teachers        set city = 'ח''ואלד' where city = 'ח''ואלד (שבט)';
+    update public.lesson_requests set city = 'ח''ואלד' where city = 'ח''ואלד (שבט)';
+    if to_regclass('public.teacher_cities') is not null then
+      insert into public.teacher_cities (teacher_id, city)
+      select teacher_id, 'ח''ואלד' from public.teacher_cities where city = 'ח''ואלד (שבט)'
+      on conflict do nothing;
+      delete from public.teacher_cities where city = 'ח''ואלד (שבט)';
+    end if;
+    delete from public.localities where name = 'ח''ואלד (שבט)';
+  else
+    update public.localities set name = 'ח''ואלד' where name = 'ח''ואלד (שבט)';
+  end if;
 end $$;
 
 -- בדיקה: אמור לחזור 0
