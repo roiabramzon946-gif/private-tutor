@@ -2,6 +2,7 @@ import { REGIONS, type Locality, type Subject } from '@/types/db'
 import { inputClass } from './fields'
 import { groupSubjects } from '@/lib/subjects'
 import { LocalityPicker } from './LocalityPicker'
+import { DAYS, LEVELS, SLOTS } from '@/lib/levels'
 
 export type SearchValues = {
   subject?: string
@@ -10,6 +11,9 @@ export type SearchValues = {
   online?: boolean
   min?: number
   max?: number
+  level?: string
+  day?: number
+  slot?: string
 }
 
 type Props = {
@@ -71,6 +75,19 @@ export function SearchFilters({ subjects, localities, values = {}, compact = fal
               ))}
             </select>
           </div>
+          <div className="lg:col-span-2">
+            <label htmlFor="level" className="mb-1 block text-sm font-medium text-gray-700">
+              רמה
+            </label>
+            <select id="level" name="level" defaultValue={values.level ?? ''} className={inputClass}>
+              <option value="">כל הרמות</option>
+              {LEVELS.map((l) => (
+                <option key={l} value={l}>
+                  {l}
+                </option>
+              ))}
+            </select>
+          </div>
           <div>
             <label htmlFor="min" className="mb-1 block text-sm font-medium text-gray-700">
               ממחיר (₪)
@@ -82,6 +99,32 @@ export function SearchFilters({ subjects, localities, values = {}, compact = fal
               עד מחיר (₪)
             </label>
             <input id="max" name="max" type="number" min={0} defaultValue={values.max} className={inputClass} />
+          </div>
+          <div>
+            <label htmlFor="day" className="mb-1 block text-sm font-medium text-gray-700">
+              יום
+            </label>
+            <select id="day" name="day" defaultValue={values.day ?? ''} className={inputClass}>
+              <option value="">כל יום</option>
+              {DAYS.map((d, i) => (
+                <option key={d} value={i}>
+                  {d}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div>
+            <label htmlFor="slot" className="mb-1 block text-sm font-medium text-gray-700">
+              שעה
+            </label>
+            <select id="slot" name="slot" defaultValue={values.slot ?? ''} className={inputClass}>
+              <option value="">כל שעה</option>
+              {SLOTS.map((s) => (
+                <option key={s.value} value={s.value}>
+                  {s.label} ({s.hours})
+                </option>
+              ))}
+            </select>
           </div>
         </>
       )}

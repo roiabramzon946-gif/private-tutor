@@ -64,7 +64,7 @@ async function Dashboard() {
   const [{ data: teacher }, subjects, { data: mySubjects }, { data: subs }, { data: contact }, localities, { data: extraCities }] = await Promise.all([
     supabase
       .from('teachers')
-      .select('bio, hourly_rate, city, region, teaches_online, teaches_in_person, years_experience, is_active, rating_avg, reviews_count')
+      .select('bio, hourly_rate, city, region, availability, teaches_online, teaches_in_person, years_experience, is_active, rating_avg, reviews_count')
       .eq('id', user.id)
       .single(),
     getSubjects(),
@@ -98,6 +98,7 @@ async function Dashboard() {
     city: teacher?.city ?? '',
     region: teacher?.region ?? '',
     extraCities: (extraCities ?? []).map((c) => c.city as string),
+    availability: (teacher?.availability as string[] | null) ?? [],
     hourlyRate: teacher?.hourly_rate ?? null,
     yearsExperience: teacher?.years_experience ?? null,
     teachesOnline: teacher?.teaches_online ?? false,

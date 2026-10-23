@@ -7,6 +7,7 @@ import { REGIONS } from '@/types/db'
 import { SearchFilters, type SearchValues } from '@/components/SearchFilters'
 import { TeacherCard } from '@/components/TeacherCard'
 import type { TeacherSearchResult } from '@/types/search'
+import { isLevel, isSlot } from '@/lib/levels'
 
 export const metadata: Metadata = { title: 'חיפוש מורים פרטיים', description: 'חיפוש מורה פרטי לפי מקצוע, עיר, מחיר ושיעורים אונליין: מתמטיקה, אנגלית, פסיכומטרי, מקצועות אקדמיים ועוד.' }
 
@@ -45,6 +46,12 @@ function parse(sp: SP) {
     online,
     min: num('min'),
     max: num('max'),
+    level: isLevel(get('level')) ? get('level') : undefined,
+    day: (() => {
+      const d = Number(get('day'))
+      return get('day') !== undefined && Number.isInteger(d) && d >= 0 && d <= 6 ? d : undefined
+    })(),
+    slot: isSlot(get('slot')) ? get('slot') : undefined,
     page: Math.max(1, Math.floor(num('page') ?? 1)),
   }
 }
@@ -67,6 +74,9 @@ async function SearchContent({ searchParams }: Props) {
       p_include_online: q.online,
       p_min_price: q.min ?? null,
       p_max_price: q.max ?? null,
+      p_level: q.level ?? null,
+      p_day: q.day ?? null,
+      p_slot: q.slot ?? null,
       p_limit: PAGE_SIZE,
       p_offset: (q.page - 1) * PAGE_SIZE,
     }),
@@ -87,6 +97,9 @@ async function SearchContent({ searchParams }: Props) {
     if (q.online) params.set('online', '1')
     if (q.min) params.set('min', String(q.min))
     if (q.max) params.set('max', String(q.max))
+    if (q.level) params.set('level', q.level)
+    if (q.day !== undefined) params.set('day', String(q.day))
+    if (q.slot) params.set('slot', q.slot)
     if (page > 1) params.set('page', String(page))
     return `/search?${params}`
   }
@@ -102,6 +115,7 @@ async function SearchContent({ searchParams }: Props) {
           <>
             נמצאו <strong className="text-gray-900">{total}</strong> מורים
             {subjectName && <> ל{subjectName}</>}
+            {q.level && <> ברמת {q.level}</>}
             {q.city && <> ב{q.city}</>}
             {!q.city && q.region && <> באזור {q.region}</>}
             {(q.city || q.region) && q.online && <> (כולל אונליין)</>}

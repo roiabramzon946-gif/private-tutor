@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import type { FormState } from '@/types/db'
 import { normalizePhone } from '@/lib/phone'
+import { ACADEMIC_CATEGORY, AVAILABILITY_VALUES, NO_LEVEL_CATEGORY, isLevel } from '@/lib/levels'
 
 function text(formData: FormData, key: string) {
   const v = formData.get(key)
@@ -83,9 +84,15 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
     .eq('id', user.id)
   if (profileError) return { error: `שמירה נכשלה: ${profileError.message}` }
 
+  const availability = formData
+    .getAll('availability')
+    .map(String)
+    .filter((v) => AVAILABILITY_VALUES.includes(v))
+
   const { error: teacherError } = await supabase
     .from('teachers')
     .update({
+      availability,
       bio: bio || null,
       city,
       region,
@@ -122,15 +129,19 @@ export async function saveProfile(_prev: FormState, formData: FormData): Promise
   if (delError) return { error: `שמירת המקצועות נכשלה: ${delError.message}` }
 
   if (subjectIds.length) {
-    const rows = subjectIds.map((id) => ({
-      teacher_id: user.id,
-      subject_id: id,
-      levels: text(formData, `levels_${id}`)
-        .split(',')
-        .map((l) => l.trim())
-        .filter(Boolean)
-        .slice(0, 10),
-    }))
+    // רמות: רק מהרשימה הקבועה. מקצוע אקדמי = "אקדמיה"; פסיכומטרי ומבחנים = בלי רמות
+    const { data: subjectRows } = await supabase.from('subjects').select('id, category').in('id', subjectIds)
+    const categoryOf = new Map((subjectRows ?? []).map((r) => [r.id as number, r.category as string | null]))
+    const rows = subjectIds.map((id) => {
+      const category = categoryOf.get(id)
+      const levels =
+        category === ACADEMIC_CATEGORY
+          ? ['אקדמיה']
+          : category === NO_LEVEL_CATEGORY
+            ? []
+            : [...new Set(formData.getAll(`levels_${id}`).filter(isLevel))]
+      return { teacher_id: user.id, subject_id: id, levels }
+    })
     const { error: upsertError } = await supabase
       .from('teacher_subjects')
       .upsert(rows, { onConflict: 'teacher_id,subject_id' })

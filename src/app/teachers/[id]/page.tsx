@@ -13,6 +13,7 @@ import type { SubscriptionTier } from '@/types/db'
 import { ReviewForm } from './ReviewForm'
 import { reviewBlockedMessage } from '@/lib/reviews'
 import { ReportButton } from '@/components/ReportButton'
+import { AvailabilityGrid } from '@/components/AvailabilityGrid'
 import { startConversation } from '@/app/messages/actions'
 import { formatPhone, whatsappUrl } from '@/lib/phone'
 
@@ -20,6 +21,7 @@ type Props = { params: Promise<{ id: string }> }
 
 type TeacherRow = {
   id: string
+  availability: string[]
   bio: string | null
   hourly_rate: number | null
   city: string | null
@@ -111,7 +113,7 @@ async function TeacherProfile({ params }: Props) {
     supabase
       .from('teachers')
       .select(
-        `id, bio, hourly_rate, city, region, teaches_online, teaches_in_person,
+        `id, bio, hourly_rate, city, region, availability, teaches_online, teaches_in_person,
          years_experience, subscription_tier, rating_avg, reviews_count,
          profiles ( full_name, avatar_url ),
          teacher_subjects ( levels, subjects ( name, slug ) )`
@@ -250,6 +252,15 @@ async function TeacherProfile({ params }: Props) {
               <ReportButton reportedUserId={teacher.id} label="דיווח על הפרופיל" />
             </div>
           )}
+        </section>
+      )}
+
+      {/* זמינות */}
+      {teacher.availability.length > 0 && (
+        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+          <h2 className="mb-1 text-xl font-bold">זמינות</h2>
+          <p className="mb-3 text-sm text-gray-500">מתי בדרך כלל אפשר לקבוע שיעור. את המועד המדויק מתאמים בצ&apos;אט.</p>
+          <AvailabilityGrid value={teacher.availability} />
         </section>
       )}
 

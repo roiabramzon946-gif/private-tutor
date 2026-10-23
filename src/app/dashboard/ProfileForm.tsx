@@ -10,6 +10,8 @@ import type { Locality, Subject } from '@/types/db'
 import { EmailNotificationsField } from '@/components/EmailNotificationsField'
 import { groupSubjects } from '@/lib/subjects'
 import { LocalityPicker } from '@/components/LocalityPicker'
+import { AvailabilityGrid } from '@/components/AvailabilityGrid'
+import { ACADEMIC_CATEGORY, LEVELS, NO_LEVEL_CATEGORY } from '@/lib/levels'
 
 export type ProfileValues = {
   fullName: string
@@ -26,6 +28,7 @@ export type ProfileValues = {
   showPhone: boolean
   emailNotifications: boolean
   subjects: Record<number, string[]> // subject_id -> levels
+  availability: string[]
 }
 
 
@@ -141,7 +144,7 @@ export function ProfileForm({ subjects, localities, values }: Props) {
       <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
         <h2 className="text-lg font-bold">מקצועות</h2>
         <p className="mb-4 text-sm text-gray-500">
-          ברמות אפשר לכתוב כמה ערכים מופרדים בפסיק, למשל: תיכון, בגרות 5 יח&quot;ל או: שנה א&apos;, הנדסה
+          לכל מקצוע סמנו את הרמות שאתם מלמדים. תלמידים מסננים לפי רמה, אז בלי רמות לא תופיעו בחיפוש לפי רמה.
         </p>
 
         {/* המקצועות שנבחרו, עם שדה רמות לכל אחד */}
@@ -152,15 +155,29 @@ export function ProfileForm({ subjects, localities, values }: Props) {
         ) : (
           <ul className="mb-4 space-y-2">
             {selectedSubjects.map((s) => (
-              <li key={s.id} className="flex flex-wrap items-center gap-3 rounded-lg bg-indigo-50 px-3 py-2">
-                <span className="min-w-40 font-medium">{s.name}</span>
-                <input
-                  name={`levels_${s.id}`}
-                  defaultValue={(values.subjects[s.id] ?? []).join(', ')}
-                  placeholder="רמות (לא חובה)"
-                  aria-label={`רמות ב${s.name}`}
-                  className={`${inputClass} flex-1 py-1.5 text-sm`}
-                />
+              <li key={s.id} className="flex flex-wrap items-center gap-x-3 gap-y-2 rounded-lg bg-indigo-50 px-3 py-2">
+                <span className="min-w-32 font-medium">{s.name}</span>
+                <div className="flex flex-1 flex-wrap gap-1.5">
+                  {s.category === ACADEMIC_CATEGORY ? (
+                    <span className="text-sm text-gray-500">רמה: אקדמיה</span>
+                  ) : s.category === NO_LEVEL_CATEGORY ? null : (
+                    LEVELS.map((lv) => (
+                      <label
+                        key={lv}
+                        className="cursor-pointer rounded-full bg-white px-2.5 py-1 text-xs ring-1 ring-gray-300 has-[:checked]:bg-indigo-600 has-[:checked]:text-white has-[:checked]:ring-indigo-600"
+                      >
+                        <input
+                          type="checkbox"
+                          name={`levels_${s.id}`}
+                          value={lv}
+                          defaultChecked={(values.subjects[s.id] ?? []).includes(lv)}
+                          className="sr-only"
+                        />
+                        {lv}
+                      </label>
+                    ))
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={() => toggle(s.id)}
@@ -206,6 +223,14 @@ export function ProfileForm({ subjects, localities, values }: Props) {
             ))}
           </div>
         </details>
+      </section>
+
+      <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+        <h2 className="text-lg font-bold">זמינות שבועית</h2>
+        <p className="mb-3 text-sm text-gray-500">
+          סמנו מתי בדרך כלל אפשר לקבוע איתכם שיעור. תלמידים יכולים לסנן לפי יום ושעה.
+        </p>
+        <AvailabilityGrid value={values.availability} editable />
       </section>
 
       <section className="flex flex-wrap items-center justify-between gap-4 rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
