@@ -161,6 +161,21 @@ async function SearchContent({ searchParams }: Props) {
           )}
         </nav>
       )}
+
+      {teachers.length > 0 && (
+        <div className="mt-8 flex flex-col items-start justify-between gap-4 rounded-2xl bg-white p-6 ring-1 ring-gray-100 sm:flex-row sm:items-center">
+          <div>
+            <h2 className="text-xl font-bold">לא מצאתם מורה מתאים?</h2>
+            <p className="mt-1 text-gray-600">פרסמו בקשת לימוד, ומורים שמלמדים את המקצוע יפנו אליכם בצ&apos;אט.</p>
+          </div>
+          <Link
+            href="/requests/new"
+            className="shrink-0 rounded-lg bg-indigo-600 px-5 py-2.5 font-semibold text-white hover:bg-indigo-700"
+          >
+            פרסום בקשה
+          </Link>
+        </div>
+      )}
     </>
   )
 }
