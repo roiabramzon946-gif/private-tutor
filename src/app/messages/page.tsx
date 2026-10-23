@@ -6,6 +6,7 @@ import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import { Avatar } from '@/components/Avatar'
 import type { ConversationSummary } from '@/types/chat'
+import { LiveRefresh } from './LiveRefresh'
 
 export const metadata: Metadata = { title: 'הודעות' }
 
@@ -13,6 +14,7 @@ export default function MessagesPage() {
   return (
     <main className="mx-auto max-w-3xl px-4 py-8">
       <h1 className="mb-6 text-3xl font-bold">הודעות</h1>
+      <LiveRefresh />
       <Suspense fallback={<div className="h-64 animate-pulse rounded-2xl bg-white" />}>
         <ConversationList />
       </Suspense>
