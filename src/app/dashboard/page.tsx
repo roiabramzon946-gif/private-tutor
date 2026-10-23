@@ -9,6 +9,8 @@ import { AvatarUploader } from './AvatarUploader'
 import { ProfileForm, type ProfileValues } from './ProfileForm'
 import { AccountForm } from './AccountForm'
 import { SubscriptionCard } from './SubscriptionCard'
+import { ProfileProgress, type ProgressItem } from './ProfileProgress'
+import { ShareProfile } from '@/components/ShareProfile'
 
 export const metadata: Metadata = { title: 'האזור שלי' }
 
@@ -110,12 +112,23 @@ async function Dashboard() {
     subjects: Object.fromEntries((mySubjects ?? []).map((r) => [r.subject_id, r.levels])),
   }
 
-  const missing = [
-    !values.hourlyRate && 'מחיר לשעה',
-    !(mySubjects ?? []).length && 'מקצועות',
-    !user.avatarUrl && 'תמונה',
-    !values.bio && 'תיאור',
-  ].filter(Boolean) as string[]
+  const subjectCount = (mySubjects ?? []).length
+  const progress: ProgressItem[] = [
+    { label: 'תמונת פרופיל', done: !!user.avatarUrl, hint: 'פרופיל עם תמונה נראה אמין יותר' },
+    { label: 'קצת עליי', done: values.bio.trim().length >= 50, hint: 'כמה שורות על הניסיון והסגנון שלך' },
+    { label: 'מקצועות ורמות', done: subjectCount > 0, hint: 'בלי מקצוע לא תופיעו בחיפוש' },
+    { label: 'מחיר לשעה', done: !!values.hourlyRate, hint: 'נדרש גם כדי לשלוח הצעות על בקשות' },
+    {
+      label: 'איפה מלמדים',
+      done: values.teachesOnline || (values.teachesInPerson && !!values.city),
+      hint: 'עיר לשיעורים פרונטליים, או אונליין',
+    },
+    { label: 'זמינות שבועית', done: values.availability.length > 0, hint: 'תלמידים מסננים לפי ימים ושעות' },
+    { label: 'שנות ניסיון', done: values.yearsExperience !== null, hint: 'גם 0 זה בסדר' },
+  ]
+  const subjectNames = subjects
+    .filter((s) => (mySubjects ?? []).some((m) => m.subject_id === s.id))
+    .map((s) => s.name)
 
   return (
     <div className="space-y-6">
@@ -126,11 +139,8 @@ async function Dashboard() {
         </Link>
       </div>
 
-      {missing.length > 0 && (
-        <div className="rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-900">
-          כדי שתלמידים ימצאו אותך, כדאי להשלים: {missing.join(', ')}.
-        </div>
-      )}
+      <ProfileProgress items={progress} />
+      <ShareProfile teacherId={user.id} subjects={subjectNames} />
 
       <div className="grid gap-6 sm:grid-cols-[1fr_auto]">
         <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
