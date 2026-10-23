@@ -42,7 +42,9 @@ export function ChatThread({ conversationId, userId, otherName, initialMessages 
   // Realtime: הודעות חדשות + אישורי קריאה
   useEffect(() => {
     let cancelled = false
-    const channel = supabase.channel(`conversation:${conversationId}`)
+    // שם ייחודי לכל הרכבה: supabase-js מחזיר ערוץ קיים עם אותו שם, גם אם הוא באמצע סגירה
+    // (קורה במעבר בין דפים וב-StrictMode), ואז ההאזנה לא נפתחת בכלל
+    const channel = supabase.channel(`conversation:${conversationId}:${crypto.randomUUID()}`)
 
     ;(async () => {
       const { data } = await supabase.auth.getSession()
@@ -80,9 +82,10 @@ export function ChatThread({ conversationId, userId, otherName, initialMessages 
     }
   }, [supabase, conversationId, userId, upsert, markRead])
 
-  // גיבוי ל-Realtime: בדיקת הודעות חדשות ואישורי קריאה כל 5 שניות כשהטאב פתוח
+  // גיבוי ל-Realtime: בדיקת הודעות חדשות ואישורי קריאה כל 5 שניות כשהטאב פתוח,
+  // ומיד כשחוזרים לטאב (בטלפון החיבור נרדם כשהאפליקציה ברקע)
   useEffect(() => {
-    const timer = setInterval(async () => {
+    const sync = async () => {
       if (document.hidden) return
       const { data } = await supabase
         .from('messages')
@@ -97,8 +100,15 @@ export function ChatThread({ conversationId, userId, otherName, initialMessages 
         if (m.sender_id !== userId && !m.read_at) incomingUnread = true
       }
       if (incomingUnread) markRead()
-    }, 5000)
-    return () => clearInterval(timer)
+    }
+    const timer = setInterval(sync, 5000)
+    document.addEventListener('visibilitychange', sync)
+    window.addEventListener('focus', sync)
+    return () => {
+      clearInterval(timer)
+      document.removeEventListener('visibilitychange', sync)
+      window.removeEventListener('focus', sync)
+    }
   }, [supabase, conversationId, userId, upsert, markRead])
 
   useEffect(() => {

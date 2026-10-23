@@ -44,7 +44,8 @@ export function UnreadBadge({ initial }: { initial: number }) {
 
     // RLS דואגת שנקבל אירועים רק על הודעות בשיחות שלנו
     let cancelled = false
-    const channel = supabase.channel('unread-badge')
+    // שם ייחודי: הרכיב מופיע פעמיים (תפריט מחשב + תפריט טלפון), וערוצים עם אותו שם משותפים ב-supabase-js
+    const channel = supabase.channel(`unread-badge:${crypto.randomUUID()}`)
     ;(async () => {
       const { data } = await supabase.auth.getSession()
       if (data.session) await supabase.realtime.setAuth(data.session.access_token)
