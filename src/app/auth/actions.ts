@@ -79,7 +79,10 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
 
   const supabase = await createClient()
   const { data, error } = await supabase.auth.signInWithPassword({ email, password })
-  if (error) return { error: translateAuthError(error.message) }
+  if (error) {
+    const unconfirmed = error.code === 'email_not_confirmed' || /email not confirmed/i.test(error.message)
+    return { error: translateAuthError(error.message), unconfirmedEmail: unconfirmed ? email : undefined }
+  }
 
   if (next) redirect(next)
 
@@ -90,6 +93,27 @@ export async function login(_prev: FormState, formData: FormData): Promise<FormS
     .maybeSingle()
 
   redirect(profile?.role === 'teacher' ? '/dashboard' : '/search')
+}
+
+// שליחה חוזרת של מייל האימות (מייל שנפל לספאם או קישור שפג)
+export async function resendConfirmation(_prev: FormState, formData: FormData): Promise<FormState> {
+  const email = str(formData, 'email').toLowerCase()
+  if (!email.includes('@')) return { error: 'כתובת המייל לא תקינה' }
+
+  const supabase = await createClient()
+  const origin = await siteOrigin()
+  const { error } = await supabase.auth.resend({
+    type: 'signup',
+    email,
+    options: { emailRedirectTo: `${origin}/auth/callback?next=/` },
+  })
+  if (error) {
+    console.error('resendConfirmation', error.message)
+    if (/rate limit|too many|security purposes/i.test(error.message))
+      return { error: 'כבר שלחנו מייל לפני רגע. חכו דקה ונסו שוב.' }
+    return { error: 'השליחה נכשלה. נסו שוב בעוד כמה דקות.' }
+  }
+  return { ok: true, message: `שלחנו שוב מייל אימות ל-${email}. אם הוא לא מגיע, בדקו בספאם ובהסגר (Quarantine).` }
 }
 
 export async function logout() {

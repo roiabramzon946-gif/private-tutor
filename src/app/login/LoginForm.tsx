@@ -1,7 +1,8 @@
 'use client'
 
 import Link from 'next/link'
-import { login } from '@/app/auth/actions'
+import { startTransition, useActionState } from 'react'
+import { login, resendConfirmation } from '@/app/auth/actions'
 import { useActionForm } from '@/lib/use-action-form'
 import { Field } from '@/components/fields'
 import { FormMessage } from '@/components/FormMessage'
@@ -21,6 +22,7 @@ export function LoginForm({ next }: { next: string | null }) {
         </Link>
       </div>
       <FormMessage state={state} />
+      {state.unconfirmedEmail && <ResendConfirmation email={state.unconfirmedEmail} />}
       <SubmitButton pending={pending} className="w-full">התחברות</SubmitButton>
       <p className="text-center text-sm text-gray-600">
         עוד אין לך חשבון?{' '}
@@ -29,5 +31,34 @@ export function LoginForm({ next }: { next: string | null }) {
         </Link>
       </p>
     </form>
+  )
+}
+
+// מוצג כשמנסים להתחבר עם מייל שעוד לא אומת
+function ResendConfirmation({ email }: { email: string }) {
+  const [state, action, pending] = useActionState(resendConfirmation, {})
+  return (
+    <div className="rounded-lg bg-indigo-50 px-4 py-3 text-sm">
+      <p className="text-gray-700">לא קיבלתם את מייל האימות, או שהקישור פג?</p>
+      {state.ok ? (
+        <p className="mt-1 font-medium text-emerald-700">{state.message}</p>
+      ) : (
+        <>
+          <button
+            type="button"
+            disabled={pending}
+            onClick={() => {
+              const fd = new FormData()
+              fd.set('email', email)
+              startTransition(() => action(fd))
+            }}
+            className="mt-1 font-medium text-indigo-700 hover:underline disabled:opacity-50"
+          >
+            {pending ? 'שולחים…' : 'שלחו לי שוב את מייל האימות'}
+          </button>
+          {state.error && <p className="mt-1 text-red-600">{state.error}</p>}
+        </>
+      )}
+    </div>
   )
 }

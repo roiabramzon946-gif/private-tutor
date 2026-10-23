@@ -12,6 +12,8 @@ export type FormState = {
   error?: string
   message?: string
   ok?: boolean
+  // התחברות עם מייל שעוד לא אומת: הכתובת, כדי להציע שליחה חוזרת של מייל האימות
+  unconfirmedEmail?: string
 }
 
 export type Locality = {
