@@ -179,7 +179,7 @@ async function TeacherProfile({ params, searchParams }: PageProps) {
               {teacher.years_experience != null && <> · {teacher.years_experience} שנות ניסיון</>}
             </p>
             {teacher.teaches_in_person && extraCities.length > 0 && (
-              <p className="mt-1 text-sm text-gray-600">מלמד/ת גם ב: {extraCities.join(', ')}</p>
+              <p className="mt-1 text-sm text-gray-600">ערים נוספות: {extraCities.join(', ')}</p>
             )}
             <Rating avg={teacher.rating_avg} count={teacher.reviews_count} className="mt-2" />
             <div className="mt-3 flex flex-wrap gap-2 text-sm">

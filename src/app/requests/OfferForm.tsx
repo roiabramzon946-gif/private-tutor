@@ -32,7 +32,7 @@ export function OfferForm({ requestId, studentFirst, subject, teacherName }: Pro
         rows={4}
         maxLength={2000}
         required
-        defaultValue={`היי ${studentFirst}, אני ${teacherName} ואני מלמד/ת ${subject}. ראיתי את הבקשה שלך ואשמח לעזור. `}
+        defaultValue={`היי ${studentFirst}, אני ${teacherName} ואני מורה ל${subject}. ראיתי את הבקשה שלך ואשמח לעזור. `}
         className={inputClass}
         aria-label="ההודעה לתלמיד"
       />
