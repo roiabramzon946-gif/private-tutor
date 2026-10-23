@@ -1,5 +1,6 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
+import Script from 'next/script'
 import { CONTACT_EMAIL } from '@/lib/legal'
 import { Heebo } from 'next/font/google'
 import { SiteHeader } from '@/components/SiteHeader'
@@ -39,6 +40,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             </a>
           </div>
         </footer>
+        {/* Vercel Web Analytics — סטטיסטיקות כניסה בלי עוגיות (צריך להפעיל ב-Vercel ← Analytics) */}
+        {process.env.VERCEL && <Script src="/_vercel/insights/script.js" strategy="afterInteractive" />}
       </body>
     </html>
   )
