@@ -1,9 +1,9 @@
 // איורי קו עדינים של לימודים לרקע של דף הבית (דקורטיבי בלבד)
-export function HeroDoodles() {
+export function HeroDoodles({ className = 'opacity-40 sm:opacity-100' }: { className?: string }) {
   return (
     <svg
       aria-hidden="true"
-      className="pointer-events-none absolute top-0 left-0 h-[420px] w-[1200px] max-w-none text-indigo-200 opacity-40 sm:opacity-100"
+      className={`pointer-events-none absolute top-0 left-0 h-[420px] w-[1200px] max-w-none text-indigo-200 ${className}`}
       viewBox="0 0 1200 420"
       fill="none"
       stroke="currentColor"
