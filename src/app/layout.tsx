@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: { default: 'TutorIL — מורים פרטיים בכל הארץ', template: '%s | TutorIL' },
   description: 'TutorIL — מצאו מורה פרטי לכל מקצוע: בית ספר, פסיכומטרי ואקדמיה, פרונטלי ואונליין',
   applicationName: 'TutorIL',
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://private-tutor-delta.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tutoril.co'),
   openGraph: { siteName: 'TutorIL', locale: 'he_IL', type: 'website' },
 }
 
