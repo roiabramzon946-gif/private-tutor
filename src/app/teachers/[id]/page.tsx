@@ -9,6 +9,7 @@ import { TierBadge } from '@/components/TierBadge'
 import type { SubscriptionTier } from '@/types/db'
 import { ReviewForm } from './ReviewForm'
 import { reviewBlockedMessage } from '@/lib/reviews'
+import { ReportButton } from '@/components/ReportButton'
 import { startConversation } from '@/app/messages/actions'
 import { formatPhone, whatsappUrl } from '@/lib/phone'
 
@@ -192,6 +193,11 @@ async function TeacherProfile({ params }: Props) {
               ) : (
                 <p className="text-sm text-gray-500">{name} מעדיף/ה שיחה דרך הצ&apos;אט באתר.</p>
               )}
+            </div>
+          )}
+          {user && (
+            <div className="mt-4 flex justify-end">
+              <ReportButton reportedUserId={teacher.id} label="דיווח על הפרופיל" />
             </div>
           )}
         </section>

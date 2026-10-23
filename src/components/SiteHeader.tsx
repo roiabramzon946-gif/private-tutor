@@ -5,6 +5,7 @@ import { createClient } from '@/lib/supabase/server'
 import { logout } from '@/app/auth/actions'
 import { Avatar } from './Avatar'
 import { UnreadBadge } from './UnreadBadge'
+import { MobileMenu } from './MobileMenu'
 
 export function SiteHeader() {
   return (
@@ -13,10 +14,7 @@ export function SiteHeader() {
         <Link href="/" dir="ltr" aria-label="TutorIL — דף הבית" className="text-xl font-extrabold tracking-tight text-gray-900">
           Tutor<span className="text-indigo-600">IL</span>
         </Link>
-        <nav className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 text-sm">
-          <Link href="/search" className="text-gray-700 hover:text-indigo-700">
-            חיפוש מורים
-          </Link>
+        <nav className="flex items-center gap-4 text-sm">
           <Suspense fallback={<div className="h-9 w-32" />}>
             <UserMenu />
           </Suspense>
@@ -32,6 +30,9 @@ async function UserMenu() {
   if (!user) {
     return (
       <div className="flex items-center gap-2">
+        <Link href="/search" className="hidden px-1 text-gray-700 hover:text-indigo-700 sm:inline">
+          חיפוש מורים
+        </Link>
         <Link href="/login" className="rounded-lg px-3 py-2 text-gray-700 hover:bg-gray-100">
           התחברות
         </Link>
@@ -48,26 +49,36 @@ async function UserMenu() {
   const supabase = await createClient()
   const { data: unread } = await supabase.rpc('unread_messages_count')
   const unreadCount = Number(unread ?? 0)
+  const requestsHref = user.role === 'teacher' ? '/requests' : '/requests/mine'
+  const requestsLabel = user.role === 'teacher' ? 'בקשות לימוד' : 'הבקשות שלי'
 
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-      <Link
-        href={user.role === 'teacher' ? '/requests' : '/requests/mine'}
-        className="text-gray-700 hover:text-indigo-700"
-      >
-        {user.role === 'teacher' ? 'בקשות לימוד' : 'הבקשות שלי'}
+    <div className="flex items-center gap-3">
+      <Link href="/search" className="hidden text-gray-700 hover:text-indigo-700 sm:inline">
+        חיפוש מורים
+      </Link>
+      <Link href={requestsHref} className="hidden text-gray-700 hover:text-indigo-700 sm:inline">
+        {requestsLabel}
       </Link>
       <UnreadBadge initial={unreadCount} />
-      <Link href="/dashboard" className="text-gray-700 hover:text-indigo-700">
+      <Link href="/dashboard" className="hidden text-gray-700 hover:text-indigo-700 sm:inline">
         האזור שלי
       </Link>
-      <span className="hidden items-center gap-2 sm:flex">
+      <span className="hidden items-center gap-2 md:flex">
         <Avatar url={user.avatarUrl} name={user.fullName} size={28} />
         <span className="text-gray-900">{user.fullName}</span>
       </span>
-      <form action={logout}>
+      <form action={logout} className="hidden sm:block">
         <button className="rounded-lg px-3 py-2 text-gray-500 hover:bg-gray-100">התנתקות</button>
       </form>
+      <MobileMenu
+        items={[
+          { href: '/search', label: 'חיפוש מורים' },
+          { href: requestsHref, label: requestsLabel },
+          { href: '/dashboard', label: 'האזור שלי' },
+        ]}
+        logout={logout}
+      />
     </div>
   )
 }

@@ -35,14 +35,10 @@ export function SubscriptionCard({ premium, rating }: Props) {
           <p className="mt-1 text-sm text-gray-600">
             פרימיום מקפיץ את הפרופיל לראש תוצאות החיפוש, עם תגית &quot;★ פרימיום&quot;.
           </p>
-          <button
-            disabled
-            title="החיבור לספק התשלומים עוד לא הושלם"
-            className="mt-4 w-full cursor-not-allowed rounded-lg bg-gray-100 px-4 py-2 text-sm text-gray-500"
-          >
-            שדרוג לפרימיום · ₪{PREMIUM_PRICE_ILS} לחודש (בקרוב)
-          </button>
-          <p className="mt-2 text-xs text-gray-500">ביטול בכל עת. המנוי נשאר פעיל עד סוף החודש ששולם.</p>
+          <div className="mt-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900">
+            🎉 בתקופת ההשקה האתר חינמי לכל המורים. מנוי פרימיום (₪{PREMIUM_PRICE_ILS} לחודש) ייפתח בהמשך, ונעדכן
+            מראש במייל.
+          </div>
         </>
       )}
 

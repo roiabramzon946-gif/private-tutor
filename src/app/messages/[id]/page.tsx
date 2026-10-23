@@ -6,6 +6,7 @@ import { getCurrentUser } from '@/lib/auth'
 import { Avatar } from '@/components/Avatar'
 import type { ChatMessage } from '@/types/chat'
 import { ChatThread } from './ChatThread'
+import { ReportButton } from '@/components/ReportButton'
 
 type Props = { params: Promise<{ id: string }> }
 
@@ -52,7 +53,7 @@ async function Conversation({ params }: Props) {
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center gap-3">
+      <div className="flex flex-wrap items-center gap-3">
         <Link href="/messages" className="rounded-lg px-2 py-1 text-gray-500 hover:bg-gray-100" aria-label="חזרה להודעות">
           →
         </Link>
@@ -65,6 +66,7 @@ async function Conversation({ params }: Props) {
             </Link>
           )}
         </div>
+        <ReportButton reportedUserId={otherId} conversationId={id} label="דיווח" />
       </div>
 
       <ChatThread conversationId={id} userId={user.id} otherName={otherName} initialMessages={messages} />
