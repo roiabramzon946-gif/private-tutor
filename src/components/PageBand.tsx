@@ -1,12 +1,8 @@
-'use client'
-
-import { usePathname } from 'next/navigation'
 import { HeroDoodles } from './HeroDoodles'
 
-// אותו רקע איורים כמו בדף הבית, בראש כל שאר הדפים
+// רקע איורי הקו בראש כל הדפים (כולל דף הבית).
+// בלי hooks — כך שהוא לא חוסם prerender של אף דף.
 export function PageBand() {
-  const pathname = usePathname()
-  if (pathname === '/') return null
   return (
     <div
       aria-hidden="true"
