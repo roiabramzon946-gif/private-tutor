@@ -12,6 +12,10 @@
 insert into public.app_settings (key, value) values ('email_provider', 'gmail')
 on conflict (key) do update set value = excluded.value;
 
+-- שם השולח (בשימוש כשהספק הוא Resend)
+insert into public.app_settings (key, value) values ('email_from', 'TutorIL <onboarding@resend.dev>')
+on conflict (key) do update set value = excluded.value;
+
 -- כתובת האתר החי (לקישורים במייל, ו-Supabase שולח אליה את הבקשה)
 insert into public.app_settings (key, value) values ('site_url', 'https://private-tutor-delta.vercel.app')
 on conflict (key) do update set value = excluded.value;
@@ -87,13 +91,13 @@ begin
      limit 50
   loop
     v_name := replace(replace(replace(r.sender_name, '&', '&amp;'), '<', '&lt;'), '>', '&gt;');
-    v_subject := 'הודעה חדשה מ' || r.sender_name || ' | מורים פרטיים';
+    v_subject := 'הודעה חדשה מ' || r.sender_name || ' | TutorIL';
     v_html :=
       '<div dir="rtl" style="font-family:Arial,Helvetica,sans-serif;font-size:16px;color:#111827;max-width:480px">'
       || '<h2 style="color:#4338ca;margin:0 0 12px">יש לך הודעה חדשה</h2>'
       || '<p>' || v_name || ' שלח/ה לך '
       || case when r.unread > 1 then r.unread || ' הודעות' else 'הודעה' end
-      || ' באתר מורים פרטיים.</p>'
+      || ' באתר TutorIL.</p>'
       || '<p style="margin:24px 0"><a href="' || v_site || '/messages/' || r.conversation_id
       || '" style="background:#4f46e5;color:#fff;padding:12px 20px;border-radius:8px;text-decoration:none">'
       || 'לקריאה ולתשובה</a></p>'

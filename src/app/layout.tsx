@@ -6,8 +6,9 @@ import './globals.css'
 const heebo = Heebo({ subsets: ['hebrew', 'latin'], variable: '--font-heebo' })
 
 export const metadata: Metadata = {
-  title: 'מורים פרטיים',
-  description: 'מצאו מורה פרטי לכל מקצוע',
+  title: { default: 'TutorIL — מורים פרטיים בכל הארץ', template: '%s | TutorIL' },
+  description: 'TutorIL — מצאו מורה פרטי לכל מקצוע: בית ספר, פסיכומטרי ואקדמיה, פרונטלי ואונליין',
+  applicationName: 'TutorIL',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
@@ -17,7 +18,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <SiteHeader />
         <div className="flex-1">{children}</div>
         <footer className="border-t border-gray-200 bg-white py-6 text-center text-sm text-gray-500">
-          © מורים פרטיים
+          © TutorIL
         </footer>
       </body>
     </html>

@@ -37,7 +37,7 @@ export async function POST(request: NextRequest) {
 
   try {
     const info = await transporter.sendMail({
-      from: { name: 'מורים פרטיים', address: process.env.GMAIL_USER! },
+      from: { name: 'TutorIL', address: process.env.GMAIL_USER! },
       to,
       subject,
       html,

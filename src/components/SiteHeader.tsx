@@ -10,8 +10,8 @@ export function SiteHeader() {
   return (
     <header className="border-b border-gray-200 bg-white">
       <div className="mx-auto flex max-w-5xl items-center justify-between gap-4 px-4 py-3">
-        <Link href="/" className="text-xl font-extrabold text-indigo-700">
-          מורים פרטיים
+        <Link href="/" dir="ltr" aria-label="TutorIL — דף הבית" className="text-xl font-extrabold tracking-tight text-gray-900">
+          Tutor<span className="text-indigo-600">IL</span>
         </Link>
         <nav className="flex items-center gap-4 text-sm">
           <Link href="/search" className="text-gray-700 hover:text-indigo-700">
