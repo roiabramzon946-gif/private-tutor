@@ -114,7 +114,8 @@ async function Board({ searchParams }: Props) {
           <p className="mb-3 text-gray-600">{total === 1 ? 'בקשה פתוחה אחת' : `${total} בקשות פתוחות`}</p>
           <ul className="space-y-4">
             {requests.map((r) => {
-              const modes = [r.in_person_ok && `פרונטלי ב${r.city}`, r.online_ok && 'אונליין'].filter(Boolean).join(' או ')
+              const cityList = [r.city, ...(r.extra_cities ?? [])].filter(Boolean).join(', ')
+              const modes = [r.in_person_ok && `פרונטלי ב${cityList}`, r.online_ok && 'אונליין'].filter(Boolean).join(' או ')
               return (
                 <li key={r.id} className="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-gray-100">
                   <div className="flex flex-wrap items-baseline justify-between gap-2">

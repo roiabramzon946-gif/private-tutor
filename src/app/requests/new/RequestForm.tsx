@@ -8,6 +8,8 @@ import { FormMessage } from '@/components/FormMessage'
 import { SubmitButton } from '@/components/SubmitButton'
 import { groupSubjects } from '@/lib/subjects'
 import type { Locality, Subject } from '@/types/db'
+import { LocalityPicker } from '@/components/LocalityPicker'
+import { MAX_REQUEST_CITIES } from '@/types/requests'
 
 export function RequestForm({ subjects, localities }: { subjects: Subject[]; localities: Locality[] }) {
   const { state, pending, onSubmit } = useActionForm(createRequest)
@@ -50,21 +52,15 @@ export function RequestForm({ subjects, localities }: { subjects: Subject[]; loc
       </fieldset>
 
       {inPerson && (
-        <div>
-          <Field
-            label="עיר"
-            name="city"
-            list="locality-options"
-            autoComplete="off"
-            placeholder="התחילו להקליד ובחרו מהרשימה"
-            required
-          />
-          <datalist id="locality-options">
-            {localities.map((l) => (
-              <option key={l.name} value={l.name} />
-            ))}
-          </datalist>
-        </div>
+        <LocalityPicker
+          localities={localities}
+          name="cities"
+          label="באילו ערים נוח לכם ללמוד?"
+          multiple
+          max={MAX_REQUEST_CITIES}
+          required
+          hint={`אפשר לבחור עד ${MAX_REQUEST_CITIES} ערים. מורים מהערים האלה ומהאזור שלהן יראו את הבקשה.`}
+        />
       )}
 
       <Field label="תקציב מקסימלי לשעה (₪, לא חובה)" name="budget_max" type="number" min={1} max={9999} />

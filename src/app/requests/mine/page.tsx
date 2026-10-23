@@ -17,6 +17,7 @@ type MyRequest = {
   id: string
   level: string | null
   city: string | null
+  extra_cities: string[] | null
   in_person_ok: boolean
   online_ok: boolean
   budget_max: number | null
@@ -51,7 +52,7 @@ async function List({ searchParams }: Props) {
   const supabase = await createClient()
   const { data } = await supabase
     .from('lesson_requests')
-    .select('id, level, city, in_person_ok, online_ok, budget_max, description, status, offers_count, created_at, subjects ( name )')
+    .select('id, level, city, extra_cities, in_person_ok, online_ok, budget_max, description, status, offers_count, created_at, subjects ( name )')
     .eq('student_id', user.id)
     .order('created_at', { ascending: false })
 
@@ -92,7 +93,7 @@ async function List({ searchParams }: Props) {
                   </span>
                 </div>
                 <p className="mt-1 text-sm text-gray-600">
-                  {[r.in_person_ok && `פרונטלי ב${r.city}`, r.online_ok && 'אונליין'].filter(Boolean).join(' או ')}
+                  {[r.in_person_ok && `פרונטלי ב${[r.city, ...(r.extra_cities ?? [])].filter(Boolean).join(', ')}`, r.online_ok && 'אונליין'].filter(Boolean).join(' או ')}
                   {r.budget_max != null && <> · עד ₪{Number(r.budget_max)} לשעה</>}
                   {' · '}פורסמה {daysAgo(r.created_at, now)}
                 </p>

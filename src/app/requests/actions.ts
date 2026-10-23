@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 import { createClient } from '@/lib/supabase/server'
 import { getCurrentUser } from '@/lib/auth'
 import type { FormState } from '@/types/db'
+import { MAX_REQUEST_CITIES } from '@/types/requests'
 
 function text(formData: FormData, key: string) {
   const v = formData.get(key)
@@ -19,7 +20,7 @@ export async function createRequest(_prev: FormState, formData: FormData): Promi
 
   const subjectId = Number(text(formData, 'subject_id'))
   const level = text(formData, 'level')
-  const cityInput = text(formData, 'city')
+  const citiesInput = [...new Set(formData.getAll('cities').map((v) => String(v).trim()).filter(Boolean))]
   const inPerson = formData.get('in_person_ok') === 'on'
   const online = formData.get('online_ok') === 'on'
   const budgetRaw = text(formData, 'budget_max')
@@ -35,19 +36,24 @@ export async function createRequest(_prev: FormState, formData: FormData): Promi
 
   const supabase = await createClient()
 
-  let city: string | null = null
-  if (cityInput) {
-    const { data: loc } = await supabase.from('localities').select('name').eq('name', cityInput).maybeSingle()
-    if (!loc) return { error: 'בחרו עיר מהרשימה (התחילו להקליד ובחרו מההצעות)' }
-    city = loc.name
+  // ערים: רק מרשימת היישובים. הראשונה נשמרת כעיר הראשית, השאר כערים נוספות
+  let cities: string[] = []
+  if (inPerson && citiesInput.length) {
+    if (citiesInput.length > MAX_REQUEST_CITIES) return { error: `אפשר לבחור עד ${MAX_REQUEST_CITIES} ערים` }
+    const { data: locs } = await supabase.from('localities').select('name').in('name', citiesInput)
+    const valid = new Set((locs ?? []).map((l) => l.name as string))
+    const invalid = citiesInput.find((c) => !valid.has(c))
+    if (invalid) return { error: `העיר "${invalid}" לא נמצאה. בחרו ערים מהרשימה.` }
+    cities = citiesInput
   }
-  if (inPerson && !city) return { error: 'לשיעורים פרונטליים צריך לבחור עיר' }
+  if (inPerson && cities.length === 0) return { error: 'לשיעורים פרונטליים צריך לבחור לפחות עיר אחת' }
 
   const { error } = await supabase.from('lesson_requests').insert({
     student_id: user.id,
     subject_id: subjectId,
     level: level || null,
-    city,
+    city: cities[0] ?? null,
+    extra_cities: cities.slice(1),
     in_person_ok: inPerson,
     online_ok: online,
     budget_max: budget,

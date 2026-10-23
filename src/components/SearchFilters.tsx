@@ -1,6 +1,7 @@
 import { REGIONS, type Locality, type Subject } from '@/types/db'
 import { inputClass } from './fields'
 import { groupSubjects } from '@/lib/subjects'
+import { LocalityPicker } from './LocalityPicker'
 
 export type SearchValues = {
   subject?: string
@@ -46,22 +47,13 @@ export function SearchFilters({ subjects, localities, values = {}, compact = fal
       </div>
 
       <div className={compact ? '' : 'lg:col-span-2'}>
-        <label htmlFor="city" className="mb-1 block text-sm font-medium text-gray-700">
-          עיר
-        </label>
-        <input
-          id="city"
+        <LocalityPicker
+          localities={localities}
           name="city"
-          list="city-options"
+          label="עיר"
           placeholder="כל הארץ"
-          defaultValue={values.city ?? ''}
-          className={inputClass}
+          initial={values.city ?? ''}
         />
-        <datalist id="city-options">
-          {localities.map((l) => (
-            <option key={l.name} value={l.name} />
-          ))}
-        </datalist>
       </div>
 
       {!compact && (

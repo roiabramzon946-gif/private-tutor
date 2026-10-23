@@ -5,6 +5,7 @@ export type OpenRequest = {
   subject_slug: string
   level: string | null
   city: string | null
+  extra_cities: string[]
   region: string | null
   in_person_ok: boolean
   online_ok: boolean
@@ -20,3 +21,4 @@ export type OpenRequest = {
 export const MAX_OFFERS_PER_REQUEST = 10
 export const MAX_OPEN_REQUESTS = 3
 export const REQUEST_DAYS_OPEN = 30
+export const MAX_REQUEST_CITIES = 5

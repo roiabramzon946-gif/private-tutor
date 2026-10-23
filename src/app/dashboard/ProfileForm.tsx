@@ -9,7 +9,7 @@ import { SubmitButton } from '@/components/SubmitButton'
 import type { Locality, Subject } from '@/types/db'
 import { EmailNotificationsField } from '@/components/EmailNotificationsField'
 import { groupSubjects } from '@/lib/subjects'
-import { ExtraCitiesField } from './ExtraCitiesField'
+import { LocalityPicker } from '@/components/LocalityPicker'
 
 export type ProfileValues = {
   fullName: string
@@ -65,22 +65,13 @@ export function ProfileForm({ subjects, localities, values }: Props) {
             defaultValue={values.hourlyRate ?? ''}
             hint="בלי מחיר הפרופיל לא יופיע בחיפוש"
           />
-          <div>
-            <Field
-              label="עיר"
-              name="city"
-              list="locality-options"
-              defaultValue={values.city}
-              placeholder="התחילו להקליד ובחרו מהרשימה"
-              autoComplete="off"
-              hint={values.region ? `אזור: ${values.region}` : 'האזור נקבע אוטומטית לפי העיר'}
-            />
-            <datalist id="locality-options">
-              {localities.map((l) => (
-                <option key={l.name} value={l.name} />
-              ))}
-            </datalist>
-          </div>
+          <LocalityPicker
+            localities={localities}
+            name="city"
+            label="עיר"
+            initial={values.city}
+            hint={values.region ? `אזור: ${values.region}` : 'האזור נקבע אוטומטית לפי העיר'}
+          />
           <Field
             label="שנות ניסיון"
             name="years_experience"
@@ -90,7 +81,15 @@ export function ProfileForm({ subjects, localities, values }: Props) {
             defaultValue={values.yearsExperience ?? ''}
           />
           <div className="sm:col-span-2">
-            <ExtraCitiesField initial={values.extraCities} listId="locality-options" />
+            <LocalityPicker
+              localities={localities}
+              name="extra_cities"
+              label="ערים נוספות שבהן את/ה מלמד/ת (רשות)"
+              multiple
+              max={10}
+              initial={values.extraCities}
+              hint="תלמידים שיחפשו באחת הערים האלה ימצאו אותך. עד 10 ערים."
+            />
           </div>
         </div>
 
