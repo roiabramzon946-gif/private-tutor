@@ -52,7 +52,7 @@ async function getTeacherSeo(id: string) {
   const supabase = createPublicClient()
   const { data } = await supabase
     .from('teachers')
-    .select('bio, hourly_rate, city, teaches_online, profiles ( full_name ), teacher_subjects ( subjects ( name ) )')
+    .select('bio, hourly_rate, city, teaches_online, profiles!teachers_id_fkey ( full_name ), teacher_subjects ( subjects ( name ) )')
     .eq('id', id)
     .maybeSingle()
   return data as unknown as {
@@ -117,7 +117,7 @@ async function TeacherProfile({ params, searchParams }: PageProps) {
       .select(
         `id, bio, hourly_rate, city, region, availability, teaches_online, teaches_in_person,
          years_experience, subscription_tier, rating_avg, reviews_count,
-         profiles ( full_name, avatar_url ),
+         profiles!teachers_id_fkey ( full_name, avatar_url ),
          teacher_subjects ( levels, subjects ( name, slug ) )`
       )
       .eq('id', id)
