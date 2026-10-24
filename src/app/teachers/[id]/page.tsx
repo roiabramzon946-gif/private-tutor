@@ -13,8 +13,8 @@ import { ReviewForm } from './ReviewForm'
 import { reviewBlockedMessage } from '@/lib/reviews'
 import { ReportButton } from '@/components/ReportButton'
 import { AvailabilityGrid } from '@/components/AvailabilityGrid'
+import { ContactLinks } from '@/components/ContactLinks'
 import { startConversation } from '@/app/messages/actions'
-import { formatPhone, whatsappUrl } from '@/lib/phone'
 
 type Props = { params: Promise<{ id: string }> }
 type PageProps = Props & { searchParams: Promise<{ chat_error?: string }> }
@@ -224,25 +224,9 @@ async function TeacherProfile({ params, searchParams }: PageProps) {
                 </button>
               </form>
               {phone ? (
-                <>
-                  <a
-                    href={`tel:${phone}`}
-                    dir="ltr"
-                    className="rounded-lg bg-white px-5 py-2.5 font-medium ring-1 ring-gray-300 hover:bg-gray-50"
-                  >
-                    📞 {formatPhone(phone)}
-                  </a>
-                  <a
-                    href={whatsappUrl(phone)}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="rounded-lg bg-green-600 px-5 py-2.5 font-medium text-white hover:bg-green-700"
-                  >
-                    וואטסאפ
-                  </a>
-                </>
+                <ContactLinks teacherId={teacher.id} phone={phone} />
               ) : (
-                <p className="text-sm text-gray-500">{name} מעדיף/ה שיחה דרך הצ&apos;אט באתר.</p>
+                <p className="text-sm text-gray-500">ליצירת קשר עם {name}, שלחו הודעה בצ&apos;אט באתר.</p>
               )}
             </div>
             {chatError && (
