@@ -48,7 +48,7 @@ export function TeacherCard({ t }: { t: TeacherSearchResult }) {
                 <div className="text-xs whitespace-nowrap text-gray-500">{t.reviews_count} ביקורות</div>
               </>
             ) : (
-              <div className="text-xs whitespace-nowrap text-gray-500">מורה חדש/ה</div>
+              <div className="text-xs whitespace-nowrap text-gray-500">עוד אין ביקורות</div>
             )}
           </div>
         </div>
