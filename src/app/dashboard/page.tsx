@@ -8,7 +8,6 @@ import { getLocalities, getSubjects } from '@/lib/data'
 import { AvatarUploader } from './AvatarUploader'
 import { ProfileForm, type ProfileValues } from './ProfileForm'
 import { AccountForm } from './AccountForm'
-import { SubscriptionCard } from './SubscriptionCard'
 import { ProfileProgress, type ProgressItem } from './ProfileProgress'
 import { ShareProfile } from '@/components/ShareProfile'
 
@@ -63,19 +62,14 @@ async function Dashboard() {
     )
   }
 
-  const [{ data: teacher }, subjects, { data: mySubjects }, { data: subs }, { data: contact }, localities, { data: extraCities }] = await Promise.all([
+  const [{ data: teacher }, subjects, { data: mySubjects }, { data: contact }, localities, { data: extraCities }] = await Promise.all([
     supabase
       .from('teachers')
-      .select('bio, hourly_rate, city, region, availability, teaches_online, teaches_in_person, years_experience, is_active, rating_avg, reviews_count')
+      .select('bio, hourly_rate, city, region, availability, teaches_online, teaches_in_person, years_experience, is_active')
       .eq('id', user.id)
       .single(),
     getSubjects(),
     supabase.from('teacher_subjects').select('subject_id, levels').eq('teacher_id', user.id),
-    supabase
-      .from('subscriptions')
-      .select('tier, status, current_period_end, cancel_at_period_end')
-      .eq('teacher_id', user.id)
-      .order('current_period_end', { ascending: false }),
     supabase
       .from('user_contacts')
       .select('phone, show_phone, email_notifications')
@@ -84,15 +78,6 @@ async function Dashboard() {
     getLocalities(),
     supabase.from('teacher_cities').select('city').eq('teacher_id', user.id).order('created_at'),
   ])
-
-  const now = new Date()
-  const activeSub = (subs ?? []).find(
-    (s) => ['active', 'trialing'].includes(s.status) && new Date(s.current_period_end) > now
-  )
-  const premium =
-    activeSub?.tier === 'premium'
-      ? { periodEnd: activeSub.current_period_end as string, cancelAtPeriodEnd: !!activeSub.cancel_at_period_end }
-      : null
 
   const values: ProfileValues = {
     fullName: user.fullName,
@@ -142,17 +127,10 @@ async function Dashboard() {
       <ProfileProgress items={progress} />
       <ShareProfile teacherId={user.id} subjects={subjectNames} />
 
-      <div className="grid gap-6 sm:grid-cols-[1fr_auto]">
-        <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
-          <h2 className="mb-4 text-lg font-bold">תמונת פרופיל</h2>
-          <AvatarUploader userId={user.id} name={user.fullName} url={user.avatarUrl} />
-        </section>
-
-        <SubscriptionCard
-          premium={premium}
-          rating={{ avg: Number(teacher?.rating_avg ?? 0), count: teacher?.reviews_count ?? 0 }}
-        />
-      </div>
+      <section className="rounded-2xl bg-white p-6 shadow-sm ring-1 ring-gray-100">
+        <h2 className="mb-4 text-lg font-bold">תמונת פרופיל</h2>
+        <AvatarUploader userId={user.id} name={user.fullName} url={user.avatarUrl} />
+      </section>
 
       <ProfileForm subjects={subjects} localities={localities} values={values} />
     </div>
