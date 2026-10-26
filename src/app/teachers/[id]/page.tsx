@@ -16,6 +16,8 @@ import { AvailabilityGrid } from '@/components/AvailabilityGrid'
 import { ContactLinks } from '@/components/ContactLinks'
 import { startConversation } from '@/app/messages/actions'
 
+const SITE = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://tutoril.co'
+
 type Props = { params: Promise<{ id: string }> }
 type PageProps = Props & { searchParams: Promise<{ chat_error?: string }> }
 
@@ -155,8 +157,43 @@ async function TeacherProfile({ params, searchParams }: PageProps) {
   const name = teacher.profiles.full_name
   const isOwner = user?.id === teacher.id
 
+  // נתונים מובנים לגוגל (schema.org). רק מידע שכבר ציבורי בפרופיל: בלי טלפון ובלי מייל.
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Person',
+    '@id': `${SITE}/teachers/${teacher.id}#teacher`,
+    url: `${SITE}/teachers/${teacher.id}`,
+    name,
+    jobTitle: 'מורה פרטי',
+    ...(teacher.bio ? { description: teacher.bio.replace(/\s+/g, ' ').slice(0, 300) } : {}),
+    ...(teacher.profiles.avatar_url ? { image: teacher.profiles.avatar_url } : {}),
+    ...(teacher.city
+      ? { workLocation: { '@type': 'Place', address: { '@type': 'PostalAddress', addressLocality: teacher.city, addressCountry: 'IL' } } }
+      : {}),
+    knowsAbout: teacher.teacher_subjects.map((ts) => ts.subjects.name),
+    ...(teacher.hourly_rate != null
+      ? {
+          makesOffer: {
+            '@type': 'Offer',
+            itemOffered: { '@type': 'Service', name: 'שיעורים פרטיים', serviceType: 'שיעורים פרטיים' },
+            priceSpecification: {
+              '@type': 'UnitPriceSpecification',
+              price: Number(teacher.hourly_rate),
+              priceCurrency: 'ILS',
+              unitText: 'HOUR',
+            },
+          },
+        }
+      : {}),
+  }
+
   return (
     <div className="space-y-6">
+      {/* '<' מוחלף כדי שטקסט שהמורה כתב (כמו ביו) לא יוכל לסגור את תג הסקריפט */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd).replace(/</g, '\\u003c') }}
+      />
       {isOwner && (
         <div className="flex items-center justify-between rounded-xl bg-indigo-50 px-4 py-3 text-sm text-indigo-900">
           <span>כך תלמידים רואים את הפרופיל שלך.</span>
