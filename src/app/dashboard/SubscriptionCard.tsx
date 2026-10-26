@@ -35,10 +35,6 @@ export function SubscriptionCard({ premium, rating }: Props) {
           <p className="mt-1 text-sm text-gray-600">
             פרימיום מקפיץ את הפרופיל לראש תוצאות החיפוש, עם כרטיס מודגש בצבע.
           </p>
-          <div className="mt-4 rounded-lg bg-green-50 px-4 py-3 text-sm text-green-900">
-            🎉 בתקופת ההשקה האתר חינמי לכל המורים. מנוי פרימיום (₪{PREMIUM_PRICE_ILS} לחודש) ייפתח בהמשך, ונעדכן
-            מראש במייל.
-          </div>
         </>
       )}
 
